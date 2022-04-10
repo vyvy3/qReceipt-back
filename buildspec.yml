@@ -7,11 +7,10 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - mvn test
+      - mvn clean install
   post_build:
     commands:
       - echo Maven Build Completed
-      - mvn package
 
 artifacts:
   files:
