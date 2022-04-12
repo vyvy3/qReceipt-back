@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtCoder {
-    private static final String key = "YW5pbWUgcGV0aXZlcmkgMT123IGNhdCBvcmlnaW4zxc1v1sf1=";
+    private static final String key = "YW5pbWUgcGV0JJKjkkcmkgMT123IGNhdCBvcmlnaW4zxc1v1sf1=";
     private static final Integer expirationDay = 1;
 
     public static String generateJwt(User user) {
@@ -24,7 +24,7 @@ public class JwtCoder {
         for (Role role : user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()));
         }
-        return Jwts.builder().setSubject(user.getPhone())
+        return Jwts.builder().setSubject(user.getUsername())
                 .claim("authorities",
                         authorities.stream()
                                 .map(GrantedAuthority::getAuthority)
