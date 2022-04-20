@@ -34,12 +34,12 @@ spring:
           starttls:
             required: true
           auth: true
-#  servlet:
-#    multipart:
-#      enabled: true
-#      file-size-threshold: 2KB
-#      max-file-size: 15MB
-#      max-request-size: 15MB
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 1MB
+      max-file-size: 100MB
+      max-request-size: 100MB
   flyway:
     baseline-on-migrate: true
     sql-migration-prefix: "Q"
