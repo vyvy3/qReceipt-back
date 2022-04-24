@@ -16,4 +16,8 @@ public class ErrorMessage {
         return "Incorrect password";
     }
 
+    public static String userNotVerified() {
+        return "User email is not verified";
+    }
+
 }

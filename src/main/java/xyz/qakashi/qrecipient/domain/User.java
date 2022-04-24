@@ -1,12 +1,10 @@
 package xyz.qakashi.qrecipient.domain;
 
 import lombok.*;
+import xyz.qakashi.qrecipient.domain.enums.Gender;
 import xyz.qakashi.qrecipient.util.Constants;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +26,15 @@ public class User extends BaseEntity<Long> {
     @Builder.Default
     private Boolean verified = false;
 
+    @Column(name = "first_name")
+    private String firstname;
+
+    @Column(name = "last_name")
+    private String lastname;
+
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @ManyToMany
     private Set<Role> roles = new HashSet<>();
