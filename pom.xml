@@ -113,6 +113,14 @@
         </dependency>
     </dependencies>
 
+    <repositories>
+        <repository>
+            <id>in-project</id>
+            <name>In Project Repo</name>
+            <url>file://${basedir}/lib/repo</url>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
