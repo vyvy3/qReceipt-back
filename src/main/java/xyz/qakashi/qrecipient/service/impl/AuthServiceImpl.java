@@ -47,7 +47,6 @@ public class AuthServiceImpl implements AuthService {
                 .username(dto.getUsername())
                 .firstname(dto.getFirstname())
                 .lastname(dto.getLastname())
-                .gender(dto.getGender())
                 .roles(Sets.newHashSet(roleRepository.getById(Role.ROLE_USER)))
                 .verified(false)
                 .build();
@@ -75,7 +74,6 @@ public class AuthServiceImpl implements AuthService {
                 .verified(true)
                 .firstname(dto.getFirstname())
                 .lastname(dto.getLastname())
-                .gender(dto.getGender())
                 .build();
         user = userRepository.save(user);
         responseDto.setSuccess(true);

@@ -1,7 +1,6 @@
 package xyz.qakashi.qrecipient.domain;
 
 import lombok.*;
-import xyz.qakashi.qrecipient.domain.enums.Gender;
 import xyz.qakashi.qrecipient.util.Constants;
 
 import javax.persistence.*;
@@ -31,10 +30,6 @@ public class User extends BaseEntity<Long> {
 
     @Column(name = "last_name")
     private String lastname;
-
-    @Column(name = "gender")
-    @Enumerated(EnumType.STRING)
-    private Gender gender;
 
     @ManyToMany
     private Set<Role> roles = new HashSet<>();
