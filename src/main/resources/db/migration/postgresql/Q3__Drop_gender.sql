@@ -1,0 +1,1 @@
+alter table qrecipient_user drop column gender;

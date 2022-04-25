@@ -2,7 +2,6 @@ package xyz.qakashi.qrecipient.web.dto;
 
 import io.swagger.annotations.ApiModel;
 import lombok.*;
-import xyz.qakashi.qrecipient.domain.enums.Gender;
 
 @Getter
 @Setter
@@ -15,5 +14,4 @@ public class RegisterDto {
     private String firstname;
     private String lastname;
     private String username;
-    private Gender gender;
 }
