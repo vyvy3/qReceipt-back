@@ -8,13 +8,14 @@ email:
   address: basearchetype@gmail.com
 spring:
   datasource:
-    url: jdbc:postgresql://qreceipt.ctwghsf2rmhb.us-east-1.rds.amazonaws.com:5432/
+    url: jdbc:postgresql://localhost:5432/qrecipient  #qreceipt.ctwghsf2rmhb.us-east-1.rds.amazonaws.com:5432/
     username: postgres
-    password: t3y445qjp0ujmBoU0ECk
+    password: postgres #t3y445qjp0ujmBoU0ECk
 
   jpa:
+    show-sql: true # commend it
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true

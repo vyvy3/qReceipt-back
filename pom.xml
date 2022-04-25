@@ -90,7 +90,36 @@
             <artifactId>flyway-core</artifactId>
             <version>8.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.17.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports-fonts</artifactId>
+            <version>6.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>my.jasper.fonts</groupId>
+            <artifactId>jasperFonts</artifactId>
+            <version>1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>my.TNSfont</groupId>
+            <artifactId>TNSfont</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>in-project</id>
+            <name>In Project Repo</name>
+            <url>file://${basedir}/lib/repo</url>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
