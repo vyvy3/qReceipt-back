@@ -6,16 +6,18 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import xyz.qakashi.qrecipient.domain.ReceiptForm;
 import xyz.qakashi.qrecipient.domain.ReceiptTemplate;
 import xyz.qakashi.qrecipient.domain.enums.FileExtension;
+import xyz.qakashi.qrecipient.domain.qReceipt;
 import xyz.qakashi.qrecipient.repository.ReceiptFormRepository;
+import xyz.qakashi.qrecipient.repository.qReceiptRepository;
 import xyz.qakashi.qrecipient.service.FileService;
 import xyz.qakashi.qrecipient.service.ReceiptService;
 import xyz.qakashi.qrecipient.web.dto.ReceiptGenerateDto;
 import xyz.qakashi.qrecipient.web.dto.ReceiptMainDataDto;
+import xyz.qakashi.qrecipient.web.dto.qReceiptViewDto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,8 +26,9 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static java.util.Objects.*;
+import static java.util.Objects.isNull;
 
 @Service
 @RequiredArgsConstructor
@@ -33,11 +36,12 @@ public class ReceiptServiceImpl implements ReceiptService {
     private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private final ReceiptFormRepository receiptFormRepository;
     private final FileService fileService;
+    private final qReceiptRepository qReceiptRepository;
 
 
     @Override
     @SneakyThrows
-    public String generateReceipt(ReceiptGenerateDto dto) {
+    public qReceiptViewDto generateReceipt(ReceiptGenerateDto dto, String authorName) {
         ReceiptForm form = receiptFormRepository.findById(dto.getFormId()).orElse(null);
         if (isNull(form)) {
             form = receiptFormRepository.getById(1L); //TODO: suppress with error but now is ok
@@ -54,9 +58,21 @@ public class ReceiptServiceImpl implements ReceiptService {
         byte[] result = getReceiptPages(printList);
         String fileName = UUID.randomUUID().toString();
         fileService.saveFile(fileName, FileExtension.PDF, result);
-        return fileName;
+        qReceipt qReceipt = new qReceipt();
+        qReceipt.setAuthor(authorName);
+        qReceipt.setPrintDate(ZonedDateTime.now());
+        qReceipt.setFileName(fileName);
+        qReceipt.setExtension(FileExtension.PDF);
+        qReceipt = qReceiptRepository.save(qReceipt);
+        return new qReceiptViewDto(qReceipt);
     }
 
+    @Override
+    public List<qReceiptViewDto> getAllByAuthor(String author) {
+        return qReceiptRepository.findAllByAuthor(author).stream()
+                .map(qReceiptViewDto::new)
+                .collect(Collectors.toList());
+    }
 
 
     private Map<String, Object> fillParameters (ReceiptTemplate template, ReceiptGenerateDto dto) {
