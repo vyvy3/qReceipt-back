@@ -1,1 +1,1 @@
-alter table qrecipient_user drop column gender;
+alter table qreceipt_user drop column gender;

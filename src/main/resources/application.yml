@@ -8,9 +8,9 @@ email:
   address: basearchetype@gmail.com
 spring:
   datasource:
-    url: jdbc:postgresql://qreceipt.ctwghsf2rmhb.us-east-1.rds.amazonaws.com:5432/
+    url: jdbc:postgresql://database-1.c162nukoos28.us-east-1.rds.amazonaws.com:5432/
     username: postgres
-    password: t3y445qjp0ujmBoU0ECk
+    password: qreceipt123
 
   jpa:
     #show-sql: true # commend it
@@ -25,7 +25,7 @@ spring:
   mail:
     host: imap.gmail.com
     port: 465
-    username: qrecipient@gmail.com
+    username: qreceipt@gmail.com
     password: qrec12345!
     properties:
       mail:
@@ -45,4 +45,4 @@ spring:
     baseline-on-migrate: true
     sql-migration-prefix: "Q"
     locations: classpath:/db/migration/postgresql
-    table: qrecipient_flyway_schema
+    table: qreceipt_flyway_schema

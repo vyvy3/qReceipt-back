@@ -1,4 +1,4 @@
-create table qrecipient_receipt (
+create table qreceipt_receipt (
     id bigserial primary key,
     file_name varchar,
     extension varchar,

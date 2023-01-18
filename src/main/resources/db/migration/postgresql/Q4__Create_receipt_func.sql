@@ -1,28 +1,28 @@
-create table qrecipient_receipt_form
+create table qreceipt_receipt_form
 (
     id          bigserial primary key,
     description varchar(255)
 );
 
-create table qrecipient_receipt_template
+create table qreceipt_receipt_template
 (
     id       bigserial primary key,
     value    text,
     position int,
-    form_id  bigint references qrecipient_receipt_form (id)
+    form_id  bigint references qreceipt_receipt_form (id)
 );
 
-create table qrecipient_template_param
+create table qreceipt_template_param
 (
     id          bigserial primary key,
     name        varchar(255),
-    template_id bigint references qrecipient_receipt_template (id)
+    template_id bigint references qreceipt_receipt_template (id)
 );
 
-INSERT INTO public.qrecipient_receipt_form (description)
+INSERT INTO public.qreceipt_receipt_form (description)
 VALUES ('test');
 
-INSERT INTO public.qrecipient_receipt_template (form_id, position, value)
+INSERT INTO public.qreceipt_receipt_template (form_id, position, value)
 VALUES (1, 1, '<?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.17.0.final using JasperReports Library version 6.17.0-6d93193241dd8cc42629e188b94f9e0bc5722efd  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="acts" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="ecd136ea-cc18-4b4b-864f-84950a239165">
@@ -173,5 +173,5 @@ VALUES (1, 1, '<?xml version="1.0" encoding="UTF-8"?>
 </jasperReport>
 ');
 
-INSERT INTO public.qrecipient_template_param (name, template_id)
+INSERT INTO public.qreceipt_template_param (name, template_id)
 VALUES ('main', 1);
