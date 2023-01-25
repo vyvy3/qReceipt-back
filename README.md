@@ -1,1 +1,0 @@
-# qReceipt-back
