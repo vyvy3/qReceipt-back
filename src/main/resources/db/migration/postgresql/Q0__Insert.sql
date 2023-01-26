@@ -1,24 +1,3 @@
-create table qreceipt_receipt_form
-(
-    id          bigserial primary key,
-    description varchar(255)
-);
-
-create table qreceipt_receipt_template
-(
-    id       bigserial primary key,
-    value    text,
-    position int,
-    form_id  bigint references qreceipt_receipt_form (id)
-);
-
-create table qreceipt_template_param
-(
-    id          bigserial primary key,
-    name        varchar(255),
-    template_id bigint references qreceipt_receipt_template (id)
-);
-
 INSERT INTO public.qreceipt_receipt_form (description)
 VALUES ('test');
 
