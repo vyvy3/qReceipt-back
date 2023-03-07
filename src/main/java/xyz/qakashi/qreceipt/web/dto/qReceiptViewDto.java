@@ -4,14 +4,13 @@ import lombok.Data;
 import xyz.qakashi.qreceipt.domain.qReceipt;
 
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Data
 public class qReceiptViewDto {
     private Long id;
 
-    private String fileName;
-
-    private String extension;
+    private UUID fileUUID;
 
     private ZonedDateTime printDate;
 
@@ -19,8 +18,7 @@ public class qReceiptViewDto {
 
     public qReceiptViewDto(qReceipt qreceipt) {
         this.id = qreceipt.getId();
-        this.fileName = qreceipt.getFileName();
-        this.extension = qreceipt.getExtension().name();
+        this.fileUUID = qreceipt.getFileUUID();
         this.printDate = qreceipt.getPrintDate();
         this.author = qreceipt.getAuthor();
     }

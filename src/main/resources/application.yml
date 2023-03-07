@@ -15,7 +15,7 @@ spring:
   jpa:
     #show-sql: true # commend it
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
@@ -23,18 +23,22 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   mail:
-    host: imap.gmail.com
-    port: 465
-    username: qreceipt@gmail.com
-    password: qrec12345!
+    host: smtp-relay.sendinblue.com
+    port: 587
+    username: reddit404error@gmail.com
+    password: gTsvOF4Pa6M3mU2G
+
     properties:
       mail:
         smtp:
           ssl:
-            enable: true
-          starttls:
-            required: true
+            trust: "*"
           auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 3000
+          writetimeout: 5000
   servlet:
     multipart:
       enabled: true

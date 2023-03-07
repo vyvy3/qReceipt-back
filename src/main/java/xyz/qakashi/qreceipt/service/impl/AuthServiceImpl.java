@@ -1,114 +1,207 @@
 package xyz.qakashi.qreceipt.service.impl;
 
-
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import xyz.qakashi.qreceipt.config.JwtCoder;
+import xyz.qakashi.qreceipt.config.exception.BadRequestException;
+import xyz.qakashi.qreceipt.config.exception.NotFoundException;
+import xyz.qakashi.qreceipt.config.exception.ServerException;
 import xyz.qakashi.qreceipt.domain.Role;
 import xyz.qakashi.qreceipt.domain.User;
-import xyz.qakashi.qreceipt.repository.EmailVerificationRepository;
+import xyz.qakashi.qreceipt.domain.VerificationCode;
+import xyz.qakashi.qreceipt.domain.enums.VerificationType;
 import xyz.qakashi.qreceipt.repository.RoleRepository;
 import xyz.qakashi.qreceipt.repository.UserRepository;
+import xyz.qakashi.qreceipt.repository.VerificationCodeRepository;
 import xyz.qakashi.qreceipt.service.AuthService;
+import xyz.qakashi.qreceipt.service.CodeGenerator;
 import xyz.qakashi.qreceipt.service.EmailService;
-import xyz.qakashi.qreceipt.util.ErrorMessage;
+import xyz.qakashi.qreceipt.service.UserService;
 import xyz.qakashi.qreceipt.util.PasswordEncoder;
 import xyz.qakashi.qreceipt.web.dto.AuthResponseDto;
 import xyz.qakashi.qreceipt.web.dto.LoginDto;
-import xyz.qakashi.qreceipt.web.dto.RegisterDto;
-import xyz.qakashi.qreceipt.web.dto.ResponseDto;
+import xyz.qakashi.qreceipt.web.dto.RegistrationDto;
 
-import java.util.UUID;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 
 import static java.util.Objects.isNull;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static java.util.Objects.nonNull;
+import static xyz.qakashi.qreceipt.util.Constants.*;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final EmailVerificationRepository emailVerificationRepository;
+    private final VerificationCodeRepository verificationCodeRepository;
+    private final UserService userService;
     private final EmailService emailService;
 
     @Override
-    public ResponseDto emailSignUp(RegisterDto dto) {
-        ResponseDto responseDto = new ResponseDto<>();
-        if (userRepository.existsByUsername(dto.getUsername())) {
-            responseDto.setStatus(BAD_REQUEST.value());
-            responseDto.setErrorMessage(ErrorMessage.userWithLoginExists(dto.getUsername()));
-            return responseDto;
+    public void registration(RegistrationDto dto) {
+
+        // Essential check that email is free
+
+        if (userService.emailExists(dto.getEmail())) {
+            throw BadRequestException.emailIsTaken(dto.getEmail());
         }
-        dto.setPassword(PasswordEncoder.encode(dto.getPassword()));
-        User user = User.builder()
-                .password(dto.getPassword())
-                .username(dto.getUsername())
-                .firstname(dto.getFirstname())
-                .lastname(dto.getLastname())
-                .roles(Sets.newHashSet(roleRepository.getById(Role.ROLE_USER)))
-                .verified(false)
-                .build();
+
+
+        // Main entity filling
+
+        User user = new User();
+        Role role = roleRepository.getById(Role.USER);
+
+        user.getRoles().add(role);
+        user.setFirstname(dto.getFirstName());
+        user.setLastname(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        String encryptedPassword = PasswordEncoder.encode(dto.getPassword());
+        user.setPassword(encryptedPassword);
+
         user = userRepository.save(user);
-        String uuid = UUID.randomUUID().toString();
-        emailService.sendEmail(user, uuid);
-        responseDto.setSuccess(true);
-        responseDto.setData(uuid);
-        return responseDto;
+    }
+
+
+    @Override
+    public void sendRegistrationCode(String email) {
+        User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        if (isNull(user)) {
+            throw NotFoundException.userNotFoundByEmail(email);
+        }
+
+        VerificationCode verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, VerificationType.REGISTRATION).orElse(new VerificationCode());
+        if (nonNull(verificationCode.getBlockedUntil()) && ZonedDateTime.now().isBefore(verificationCode.getBlockedUntil())) {
+            throw BadRequestException.userIsBlocked();
+        }
+        verificationCode.setVerificationType(VerificationType.REGISTRATION);
+        verificationCode.setNumberOfTries(0);
+        String generatedCode = CodeGenerator.byLength(CODE_DEFAULT_LENGTH);
+        emailService.sendSimpleMessage(email, "Registration code", generatedCode);
+        verificationCode.setCode(generatedCode);
+        verificationCode.setSendTime(ZonedDateTime.now());
+        verificationCode.setBlockedUntil(null);
+        verificationCode.setUserId(user.getId());
+        verificationCode.setConfirmed(false);
+
+        verificationCodeRepository.save(verificationCode);
     }
 
     @Override
-    public ResponseDto simpleSignUp(RegisterDto dto) {
-        ResponseDto responseDto = new ResponseDto<>();
-        if (userRepository.existsByUsername(dto.getUsername())) {
-            responseDto.setStatus(BAD_REQUEST.value());
-            responseDto.setErrorMessage(ErrorMessage.userWithLoginExists(dto.getUsername()));
-            return responseDto;
-        }
-        dto.setPassword(PasswordEncoder.encode(dto.getPassword()));
-        User user = User.builder()
-                .password(dto.getPassword())
-                .username(dto.getUsername())
-                .roles(Sets.newHashSet(roleRepository.getById(Role.ROLE_USER)))
-                .verified(true)
-                .firstname(dto.getFirstname())
-                .lastname(dto.getLastname())
-                .build();
-        user = userRepository.save(user);
-        responseDto.setSuccess(true);
-        return responseDto;
-    }
-
-    @Override
-    public ResponseDto signIn(LoginDto dto) {
-        ResponseDto response = new ResponseDto<>();
-
-        User user = userRepository.findByUsername(dto.getUsername()).orElse(null);
+    public AuthResponseDto login(LoginDto dto) {
+        User user = userRepository.findByEmailIgnoreCase(dto.getEmail()).orElse(null);
 
         if (isNull(user)) {
-            response.setStatus(NOT_FOUND.value());
-            response.setErrorMessage(ErrorMessage.userNotFoundByUsername(dto.getUsername()));
-            return response;
+            throw NotFoundException.userNotFoundByEmail(dto.getEmail());
         }
 
-        if (!PasswordEncoder.verifyPassword(dto.getPassword(), user.getPassword()) && user.getVerified().equals(true)) {
-            response.setStatus(BAD_REQUEST.value());
-            response.setErrorMessage(ErrorMessage.incorrectPassword());
-            return response;
+        if (!user.isVerified()) {
+            throw BadRequestException.userNotVerified();
         }
 
-        if (isNull(user.getVerified()) || !user.getVerified()) {
-            response.setStatus(BAD_REQUEST.value());
-            response.setErrorMessage(ErrorMessage.userNotVerified());
-            return response;
+        if (!PasswordEncoder.verifyPassword(dto.getPassword(), user.getPassword())) {
+            throw BadRequestException.incorrectPassword();
         }
 
-        response.setSuccess(true);
-        response.setData(AuthResponseDto.builder().accessToken(JwtCoder.generateJwt(user)).build());
+        AuthResponseDto response = new AuthResponseDto(JwtCoder.generateJwt(user));
         return response;
-
     }
 
+    @Override
+    public void sendPasswordRecoveryCode(String email) {
+        User user;
+        user = userRepository.findByEmailIgnoreCase(email).orElse(null);
 
+        if (isNull(user)) {
+            throw NotFoundException.userNotFoundByEmail(email);
+        }
+
+        VerificationCode verificationCode;
+        verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, VerificationType.PASSWORD_RECOVERY).orElse(new VerificationCode());
+
+        if (nonNull(verificationCode.getBlockedUntil()) && ZonedDateTime.now().isBefore(verificationCode.getBlockedUntil())) {
+            throw BadRequestException.userIsBlocked();
+        }
+        verificationCode.setVerificationType(VerificationType.PASSWORD_RECOVERY);
+        verificationCode.setNumberOfTries((short) 0);
+        verificationCode.setSendTime(ZonedDateTime.now());
+        verificationCode.setBlockedUntil(null);
+        verificationCode.setUserId(user.getId());
+        verificationCode.setConfirmed(false);
+
+        String generatedCode = CodeGenerator.byLength(CODE_DEFAULT_LENGTH);
+        emailService.sendSimpleMessage(email, "Password recovery code", generatedCode);
+
+        verificationCode.setCode(generatedCode);
+        verificationCodeRepository.save(verificationCode);
+    }
+
+    @Override
+    public void compareSendCodeByType(String email, String code, VerificationType type) {
+        VerificationCode verificationCode;
+        verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, type).orElse(null);
+
+
+        if (isNull(verificationCode)) {
+            throw BadRequestException.incorrectCode();
+        }
+
+        if (verificationCode.isConfirmed()) {
+            throw BadRequestException.codeAlreadyConfirmed();
+        }
+
+        User user = verificationCode.getUser();
+        Integer count = verificationCode.getNumberOfTries();
+        String sentCode = verificationCode.getCode();
+        ZonedDateTime codeActiveTime = verificationCode.getExpirationTime();
+
+        if (count < CODE_MAX_ATTEMPT_COUNT) {
+            if (Objects.equals(sentCode, code)) {
+                if (ZonedDateTime.now().isBefore(codeActiveTime)) {
+                    if (type.equals(VerificationType.REGISTRATION)) {
+                        user.setVerified(true);
+                        userRepository.save(user);
+                    }
+                    verificationCode.setConfirmed(true);
+                    verificationCodeRepository.save(verificationCode);
+                } else {
+                    throw BadRequestException.codeExpired();
+                }
+            } else {
+                count++;
+                verificationCode.setNumberOfTries(count);
+                verificationCodeRepository.save(verificationCode);
+                throw BadRequestException.codeMismatch();
+            }
+        } else {
+            if (isNull(verificationCode.getBlockedUntil())) {
+                verificationCode.setBlockedUntil(ZonedDateTime.now().plusMinutes(CODE_BLOCK_TIME_IN_MINUTES));
+                verificationCodeRepository.save(verificationCode);
+            }
+            throw BadRequestException.codeExcessCount();
+        }
+    }
+
+    @Override
+    public void updatePassword(String email, String password) {
+        VerificationCode verificationCode;
+
+        verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, VerificationType.PASSWORD_RECOVERY).orElse(null);
+
+        if (isNull(verificationCode) || !verificationCode.isConfirmed()) {
+            throw BadRequestException.codeNotConfirmed();
+        }
+        User user = verificationCode.getUser();
+        user.setPassword(PasswordEncoder.encode(password));
+        verificationCode.clearCode();
+        verificationCode.setConfirmed(false);
+        userRepository.save(user);
+        verificationCodeRepository.save(verificationCode);
+    }
 }

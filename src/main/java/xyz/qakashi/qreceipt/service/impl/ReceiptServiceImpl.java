@@ -9,7 +9,6 @@ import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import org.springframework.stereotype.Service;
 import xyz.qakashi.qreceipt.domain.ReceiptForm;
 import xyz.qakashi.qreceipt.domain.ReceiptTemplate;
-import xyz.qakashi.qreceipt.domain.enums.FileExtension;
 import xyz.qakashi.qreceipt.domain.qReceipt;
 import xyz.qakashi.qreceipt.repository.ReceiptFormRepository;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
@@ -24,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,13 +56,12 @@ public class ReceiptServiceImpl implements ReceiptService {
             printList.add(print);
         }
         byte[] result = getReceiptPages(printList);
-        String fileName = UUID.randomUUID().toString();
-        fileService.saveFile(fileName, FileExtension.PDF, result);
+        String fileName = "Receipt-" + LocalDate.now().toString() + ".pdf";
+        UUID fileUUID = fileService.save(fileName, result);
         qReceipt qReceipt = new qReceipt();
         qReceipt.setAuthor(authorName);
         qReceipt.setPrintDate(ZonedDateTime.now());
-        qReceipt.setFileName(fileName);
-        qReceipt.setExtension(FileExtension.PDF);
+        qReceipt.setFileUUID(fileUUID);
         qReceipt = qReceiptRepository.save(qReceipt);
         return new qReceiptViewDto(qReceipt);
     }

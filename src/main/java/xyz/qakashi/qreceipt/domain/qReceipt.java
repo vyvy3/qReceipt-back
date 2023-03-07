@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import xyz.qakashi.qreceipt.domain.enums.FileExtension;
 import xyz.qakashi.qreceipt.util.Constants;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,11 +18,8 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 public class qReceipt extends BaseEntity<Long> {
 
-    @Column(name = "file_name")
-    private String fileName;
-
-    @Enumerated(EnumType.STRING)
-    private FileExtension extension;
+    @Column(name = "file_uuid")
+    private UUID fileUUID;
 
     @Column(name = "print_date")
     private ZonedDateTime printDate;

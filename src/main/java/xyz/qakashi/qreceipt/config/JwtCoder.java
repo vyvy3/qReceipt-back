@@ -1,5 +1,6 @@
 package xyz.qakashi.qreceipt.config;
 
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -16,15 +17,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JwtCoder {
-    private static final String key = "YW5pbWUgcGV0JJKjkkcmkgMT123IGNhdCBvcmlnaW4zxc1v1sf1=";
+    private static final String key = "YW5pbWUgcGV0aXZlcmkgMTIzIGNhdCBvcmlnaW4zxc1v1sf1=";
     private static final Integer expirationDay = 1;
 
     public static String generateJwt(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : user.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName().toUpperCase()));
+            authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
-        return Jwts.builder().setSubject(user.getUsername())
+        return Jwts.builder().setSubject(user.getEmail())
                 .claim("authorities",
                         authorities.stream()
                                 .map(GrantedAuthority::getAuthority)

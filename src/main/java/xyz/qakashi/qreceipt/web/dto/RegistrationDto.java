@@ -11,10 +11,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("Login credentials model")
-public class LoginDto {
+@ApiModel(description = "Registration model")
+public class RegistrationDto {
+    @ApiModelProperty("First name")
+    protected String firstName;
+
+    @ApiModelProperty("Last name")
+    protected String lastName;
+
     @ApiModelProperty(value = "Email", required = true)
-    private String email;
+    protected String email;
+
     @ApiModelProperty(value = "Password", required = true)
-    private String password;
+    protected String password;
 }

@@ -1,24 +1,6 @@
-create table qreceipt_receipt_form
-(
-    id          bigserial primary key,
-    description varchar(255)
-);
-
-create table qreceipt_receipt_template
-(
-    id       bigserial primary key,
-    value    text,
-    position int,
-    form_id  bigint references qreceipt_receipt_form (id)
-);
-
-create table qreceipt_template_param
-(
-    id          bigserial primary key,
-    name        varchar(255),
-    template_id bigint references qreceipt_receipt_template (id)
-);
-
+insert into qreceipt_role (id, name)
+values (1, 'USER'),
+       (2, 'ADMIN');
 INSERT INTO public.qreceipt_receipt_form (description)
 VALUES ('test');
 
@@ -163,7 +145,7 @@ VALUES (1, 1, '<?xml version="1.0" encoding="UTF-8"?>
 				<textElement>
 					<font fontName="Times New Roman" size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA["With Respect, QRecipient"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["With Respect, qreceipt"]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnFooter>

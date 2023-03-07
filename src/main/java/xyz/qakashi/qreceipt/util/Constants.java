@@ -9,4 +9,10 @@ public class Constants {
     public static final String AUTHORIZATION_PREFIX = "bearer";
     public static final String PUBLIC_API_ENDPOINT = "/public";
     public static final String PRIVATE_API_ENDPOINT = "/private";
+    public static final String FILE_UPLOAD_FOLDER = "\\files\\";
+
+    public static Integer CODE_LIFETIME_IN_SECONDS = 300;
+    public static Integer CODE_BLOCK_TIME_IN_MINUTES = 5;
+    public static Integer CODE_DEFAULT_LENGTH = 6;
+    public static Integer CODE_MAX_ATTEMPT_COUNT = 5;
 }

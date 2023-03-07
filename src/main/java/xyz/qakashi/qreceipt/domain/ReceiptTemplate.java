@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReceiptTemplate extends BaseEntity<Long> {
-    @Column(name = "value")
+    @Column(name = "value", columnDefinition = "text")
     private String value;
 
     @Column(name = "position")
