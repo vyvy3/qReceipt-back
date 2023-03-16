@@ -3,7 +3,9 @@ package xyz.qakashi.qreceipt.util;
 import com.amdelamar.jhash.Hash;
 import com.amdelamar.jhash.algorithms.Type;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 
+@UtilityClass
 public class PasswordEncoder {
     private static final String pepper = "qreceipt";
     public static String encode(String password) {

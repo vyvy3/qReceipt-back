@@ -1,7 +1,6 @@
 package xyz.qakashi.qreceipt.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -10,12 +9,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import xyz.qakashi.qreceipt.config.exception.NotFoundException;
+import xyz.qakashi.qreceipt.config.exception.ServerException;
 import xyz.qakashi.qreceipt.domain.FileData;
 import xyz.qakashi.qreceipt.repository.FileRepository;
 import xyz.qakashi.qreceipt.service.FileService;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,29 +33,39 @@ public class FileServiceImpl implements FileService {
 
     private final FileRepository fileRepository;
 
-    @SneakyThrows // TODO: a proper error
     @Override
     public Resource get(UUID id) {
         FileData fileData = fileRepository.findById(id).orElse(null);
         if (isNull(fileData)) {
-            return null; // TODO: a proper error
+            throw NotFoundException.fileNotFound();
         }
 
         Path path = Paths.get(FILE_UPLOAD_FOLDER + fileData.getName());
-        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+        ByteArrayResource resource = null;
+        try {
+            resource = new ByteArrayResource(Files.readAllBytes(path));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw ServerException.errorWhileReadingFile();
+        }
         return resource;
     }
 
-    @SneakyThrows
     @Override
     public ResponseEntity<Resource> getResponse(UUID id) {
         FileData fileData = fileRepository.findById(id).orElse(null);
         if (isNull(fileData)) {
-            return null; // TODO: a proper error
+            throw NotFoundException.fileNotFound();
         }
 
         Path path = Paths.get(FILE_UPLOAD_FOLDER + fileData.getName());
-        ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));
+        ByteArrayResource resource = null;
+        try {
+            resource = new ByteArrayResource(Files.readAllBytes(path));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw ServerException.errorWhileReadingFile();
+        }
         File fileInfo = new File(FILE_UPLOAD_FOLDER + fileData.getName());
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileData.getName());
@@ -91,10 +101,9 @@ public class FileServiceImpl implements FileService {
             outputStream = new FileOutputStream(localFileData);
             outputStream.write(file);
             outputStream.close();
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw ServerException.errorWhileSavingFile();
         }
 
         return id;
@@ -104,7 +113,7 @@ public class FileServiceImpl implements FileService {
     public ResponseEntity<byte[]> preview(UUID id) {
         FileData fileData = fileRepository.findById(id).orElse(null);
         if (isNull(fileData)) {
-            return null; // TODO: a proper error
+            throw NotFoundException.fileNotFound();
         }
         File file = new File(FILE_UPLOAD_FOLDER + fileData.getName());
         byte[] fileContent;
@@ -133,7 +142,6 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    @SneakyThrows   // TODO: a proper error
     public UUID save(MultipartFile saveFile) {
         UUID id = UUID.randomUUID();    // generate random UUID to use it as file reference
         FileData fileData = new FileData();
@@ -144,9 +152,16 @@ public class FileServiceImpl implements FileService {
         File localFileData = new File(FILE_UPLOAD_FOLDER + saveFile.getOriginalFilename());
 
         // Write the file to the local file system
-        FileOutputStream outputStream = new FileOutputStream(localFileData);
-        outputStream.write(saveFile.getBytes());
-        outputStream.close();
+        FileOutputStream outputStream = null;
+        try {
+            outputStream = new FileOutputStream(localFileData);
+            outputStream.write(saveFile.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw ServerException.errorWhileSavingFile();
+        }
+
         return id;
     }
 }

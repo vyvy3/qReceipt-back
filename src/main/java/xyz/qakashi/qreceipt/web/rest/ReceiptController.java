@@ -1,17 +1,18 @@
 package xyz.qakashi.qreceipt.web.rest;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.ReceiptGenerateDto;
 import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 import static xyz.qakashi.qreceipt.util.Constants.PRIVATE_API_ENDPOINT;
 
@@ -24,8 +25,8 @@ public class ReceiptController {
 
     @PostMapping("/generate")
     public ResponseEntity<qReceiptViewDto> generateReceipt(@ApiIgnore @Autowired Principal principal,
-                                                           @RequestBody ReceiptGenerateDto dto) {
-        return ResponseEntity.ok(receiptService.generateReceipt(dto, principal.getName()));
+                                                           @ApiParam("Purchased products") @RequestBody Map<String, Double> products) {
+        return ResponseEntity.ok(receiptService.generateReceipt(products, principal.getName()));
     }
 
     @GetMapping("/getAll")

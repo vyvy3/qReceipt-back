@@ -7,6 +7,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import org.springframework.stereotype.Service;
+import xyz.qakashi.qreceipt.config.exception.ServerException;
 import xyz.qakashi.qreceipt.domain.ReceiptForm;
 import xyz.qakashi.qreceipt.domain.ReceiptTemplate;
 import xyz.qakashi.qreceipt.domain.qReceipt;
@@ -14,7 +15,6 @@ import xyz.qakashi.qreceipt.repository.ReceiptFormRepository;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.FileService;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.ReceiptGenerateDto;
 import xyz.qakashi.qreceipt.web.dto.ReceiptMainDataDto;
 import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
 
@@ -41,15 +41,15 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     @Override
     @SneakyThrows
-    public qReceiptViewDto generateReceipt(ReceiptGenerateDto dto, String authorName) {
-        ReceiptForm form = receiptFormRepository.findById(dto.getFormId()).orElse(null);
+    public qReceiptViewDto generateReceipt (Map<String, Double> products, String authorName) {
+    ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
         if (isNull(form)) {
-            form = receiptFormRepository.getById(1L); //TODO: suppress with error but now is ok
+            throw ServerException.noReceiptFormIsPresent();
         }
         List<JasperPrint> printList = new ArrayList<>();
 
         for (ReceiptTemplate template : form.getTemplates()) {
-            Map<String, Object> parameters = fillParameters(template, dto);
+            Map<String, Object> parameters = fillParameters(template, products);
 
             JasperReport report = JasperCompileManager.compileReport(getJrxml(template));
             JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
@@ -74,7 +74,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
 
-    private Map<String, Object> fillParameters (ReceiptTemplate template, ReceiptGenerateDto dto) {
+    private Map<String, Object> fillParameters (ReceiptTemplate template, Map<String, Double> products) {
 
         Map<String, Object> parameters = new HashMap<>();
 
@@ -89,8 +89,8 @@ public class ReceiptServiceImpl implements ReceiptService {
                     int cnt = 1;
                     List<ReceiptMainDataDto> mainInfo = new ArrayList<>();
 
-                    for (Map.Entry<String, String> entry : dto.getValues().entrySet()) {
-                        mainInfo.add(new ReceiptMainDataDto(String.valueOf(cnt), entry.getKey(), entry.getValue()));
+                    for (Map.Entry<String, Double> entry : products.entrySet()) {
+                        mainInfo.add(new ReceiptMainDataDto(String.valueOf(cnt), entry.getKey(), entry.getValue().toString()));
                         cnt++;
                     }
                     JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(mainInfo);
