@@ -14,10 +14,10 @@ import lombok.Setter;
 @ApiModel(description = "Registration model")
 public class RegistrationDto {
     @ApiModelProperty("First name")
-    protected String firstName;
+    protected String firstname;
 
     @ApiModelProperty("Last name")
-    protected String lastName;
+    protected String lastname;
 
     @ApiModelProperty(value = "Email", required = true)
     protected String email;
