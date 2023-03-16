@@ -9,6 +9,7 @@ import xyz.qakashi.qreceipt.domain.enums.VerificationType;
 import xyz.qakashi.qreceipt.service.AuthService;
 import xyz.qakashi.qreceipt.service.UserService;
 import xyz.qakashi.qreceipt.web.dto.AuthResponseDto;
+import xyz.qakashi.qreceipt.web.dto.BaserResponseDto;
 import xyz.qakashi.qreceipt.web.dto.LoginDto;
 import xyz.qakashi.qreceipt.web.dto.RegistrationDto;
 
@@ -24,10 +25,10 @@ public class AuthController {
 
     @GetMapping("/emailExists/{email}")
     @ApiOperation("Check if the email is already in the database")
-    public ResponseEntity<Boolean> emailExists(
+    public ResponseEntity<BaserResponseDto> emailExists(
             @ApiParam("Email") @PathVariable(name = "email") String email
     ) {
-        return ResponseEntity.ok(userService.emailExists(email));
+        return ResponseEntity.ok(new BaserResponseDto(String.valueOf(userService.emailExists(email))));
     }
 
     @PostMapping("/registration/createUser")
