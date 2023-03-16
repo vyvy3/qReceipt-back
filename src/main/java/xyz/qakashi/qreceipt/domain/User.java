@@ -6,6 +6,7 @@ import xyz.qakashi.qreceipt.util.Constants;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -29,6 +30,9 @@ public class User extends BaseEntity<Long> {
 
     @Column(name = "last_name")
     private String lastname;
+
+    @Column(name = "picture")
+    private UUID picture;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
