@@ -11,7 +11,7 @@ import xyz.qakashi.qreceipt.service.EmailService;
 public class EmailServiceImpl implements EmailService {
     private final JavaMailSender emailSender;
 
-    private final String from = "reddit404error@gmail.com";
+    private final String from = "no-reply@qreceipt.com";
     @Override
     public void sendSimpleMessage(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();

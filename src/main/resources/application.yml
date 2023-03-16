@@ -25,8 +25,8 @@ spring:
   mail:
     host: smtp-relay.sendinblue.com
     port: 587
-    username: reddit404error@gmail.com
-    password: gTsvOF4Pa6M3mU2G
+    username: noreply.qreceipt@gmail.com
+    password: kbBd9gz5MwP4jcyL
 
     properties:
       mail:
