@@ -20,7 +20,7 @@ public class ProfileController {
     private final UserService userService;
 
     @GetMapping("/getMyProfile")
-    public ResponseEntity<ProfileViewDto> generateReceipt(@ApiIgnore @Autowired Principal principal) {
+    public ResponseEntity<ProfileViewDto> getMyProfile(@ApiIgnore @Autowired Principal principal) {
         return ResponseEntity.ok(userService.getProfileByEmail(principal.getName()));
     }
 
