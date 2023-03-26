@@ -1,10 +1,11 @@
 name: Docker Build and Deploy
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - develop
   pull_request:
-    branches: [ develop ]
-
+    branches:
+      - develop
 jobs:
   build-and-deploy:
     runs-on: self-hosted
@@ -14,14 +15,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Build and run Docker container
+      - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
           file: ./Dockerfile
-          push: false
+          push: true
           tags: qreceipt:latest
-          run: |
-            sudo docker stop qreceipt || true
-            sudo docker rm qreceipt || true
-            sudo docker run -d -p 8080:8080 --name qreceipt --restart always qreceipt:latest
+
+      - name: Stop and remove running Docker container
+        uses: docker/cli@v1
+        with:
+          command: |
+            docker stop qreceipt || true
+            docker rm qreceipt || true
+
+      - name: Run Docker container
+        uses: docker/cli@v1
+        with:
+          command: docker run -d -p 8080:8080 --name qreceipt --restart always qreceipt:latest
