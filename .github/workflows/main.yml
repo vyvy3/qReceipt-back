@@ -24,13 +24,10 @@ jobs:
           tags: qreceipt:latest
 
       - name: Stop and remove running Docker container
-        uses: docker/cli@v1
-        with:
-          command: |
-            docker stop qreceipt || true
-            docker rm qreceipt || true
+        run: |
+          docker stop qreceipt || true
+          docker rm qreceipt || true
 
       - name: Run Docker container
-        uses: docker/cli@v1
-        with:
-          command: docker run -d -p 8080:8080 --name qreceipt --restart always qreceipt:latest
+        run: |
+          docker run -d -p 8080:8080 --name qreceipt --restart always qreceipt:latest
