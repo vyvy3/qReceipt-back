@@ -8,9 +8,9 @@ email:
   address: basearchetype@gmail.com
 spring:
   datasource:
-    url: jdbc:postgresql://45.148.31.152:5432/qreceipt
+    url: jdbc:postgresql://database:5432/qreceipt
     username: postgres
-    password: postgres
+    password: qreceipt
 
   jpa:
     #show-sql: true # commend it
