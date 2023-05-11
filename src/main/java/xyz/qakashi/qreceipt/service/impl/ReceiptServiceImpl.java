@@ -1,11 +1,13 @@
 package xyz.qakashi.qreceipt.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.stereotype.Service;
 import xyz.qakashi.qreceipt.config.exception.ServerException;
 import xyz.qakashi.qreceipt.domain.ReceiptForm;
@@ -61,7 +63,9 @@ public class ReceiptServiceImpl implements ReceiptService {
         qReceipt qReceipt = new qReceipt();
         qReceipt.setAuthor(authorName);
         qReceipt.setPrintDate(ZonedDateTime.now());
-        qReceipt.setFileUUID(fileUUID);
+        qReceipt.setId(fileUUID);
+        qReceipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
+        qReceipt.setTotalSum(getTotalSum(products));
         qReceipt = qReceiptRepository.save(qReceipt);
         return new qReceiptViewDto(qReceipt);
     }
@@ -115,5 +119,9 @@ public class ReceiptServiceImpl implements ReceiptService {
         exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, os);
         exporter.exportReport();
         return os.toByteArray();
+    }
+
+    private Double getTotalSum(Map<String, Double> products) {
+        return products.values().stream().mapToDouble(Double::doubleValue).sum();
     }
 }

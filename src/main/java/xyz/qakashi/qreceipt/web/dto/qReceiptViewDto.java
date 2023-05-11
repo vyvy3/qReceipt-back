@@ -8,9 +8,7 @@ import java.util.UUID;
 
 @Data
 public class qReceiptViewDto {
-    private Long id;
-
-    private UUID fileUUID;
+    private UUID id;
 
     private ZonedDateTime printDate;
 
@@ -18,7 +16,6 @@ public class qReceiptViewDto {
 
     public qReceiptViewDto(qReceipt qreceipt) {
         this.id = qreceipt.getId();
-        this.fileUUID = qreceipt.getFileUUID();
         this.printDate = qreceipt.getPrintDate();
         this.author = qreceipt.getAuthor();
     }
