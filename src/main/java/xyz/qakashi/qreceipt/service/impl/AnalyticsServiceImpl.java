@@ -2,12 +2,9 @@ package xyz.qakashi.qreceipt.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import xyz.qakashi.qreceipt.domain.qReceipt;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.AnalyticsService;
 
-import java.nio.DoubleBuffer;
-import java.time.Month;
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
@@ -19,10 +16,22 @@ public class AnalyticsServiceImpl implements AnalyticsService {
     private final qReceiptRepository receiptRepository;
 
     @Override
+    public List<Map<String, Double>> getMySpendingsPerLastNMonths(int numberOfMonths, String email) {
+        ZonedDateTime startDate = ZonedDateTime.now().minusMonths(numberOfMonths).withDayOfMonth(1);
+        List<Map<String, String>> queryResult = receiptRepository.getTotalSumByLogin(startDate, email);
+
+        return getMonthsSum(numberOfMonths, queryResult);
+    }
+
+    @Override
     public List<Map<String, Double>> getSpendingsPerLastNMonths(int numberOfMonths) {
         ZonedDateTime startDate = ZonedDateTime.now().minusMonths(numberOfMonths).withDayOfMonth(1);
         List<Map<String, String>> queryResult = receiptRepository.getTotalSum(startDate);
 
+        return getMonthsSum(numberOfMonths, queryResult);
+    }
+
+    private List<Map<String, Double>> getMonthsSum(int numberOfMonths, List<Map<String, String>> queryResult) {
         Map<Integer, String> lastNMonths = getLastNMonths(numberOfMonths);
         List<Map<String, Double>> result = new ArrayList<>();
 
@@ -30,7 +39,7 @@ public class AnalyticsServiceImpl implements AnalyticsService {
             Map<String, Double> currentMonthSum = new HashMap<>();
             String monthName = month.getValue();
             Double monthTotal = queryResult.stream()
-                    .filter(r -> Integer.parseInt(r. get("month")) == month.getKey())
+                    .filter(r -> Integer.parseInt(r.get("month")) == month.getKey())
                     .mapToDouble(r -> Double.parseDouble(r.getOrDefault("sum", "0")))
                     .findFirst()
                     .orElse(0D);

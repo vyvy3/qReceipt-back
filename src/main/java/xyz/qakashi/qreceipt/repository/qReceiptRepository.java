@@ -22,4 +22,14 @@ public interface qReceiptRepository extends JpaRepository<qReceipt, UUID> {
             "GROUP BY MONTH(e.createdDate)" +
             "ORDER BY MONTH(e.createdDate) ASC")
     List<Map<String, String>> getTotalSum(@Param("startDate") ZonedDateTime startDate);
+
+    @Query("SELECT CAST(MONTH(e.createdDate) AS string) as month, " +
+            "CAST(SUM(e.totalSum) AS string) as sum " +
+            "FROM qReceipt e " +
+            "WHERE e.createdDate >= :startDate AND e.owner.email = :email " +
+            "GROUP BY MONTH(e.createdDate)" +
+            "ORDER BY MONTH(e.createdDate) ASC")
+    List<Map<String, String>> getTotalSumByLogin(@Param("startDate") ZonedDateTime startDate,
+                                                 @Param("email") String email);
+
 }
