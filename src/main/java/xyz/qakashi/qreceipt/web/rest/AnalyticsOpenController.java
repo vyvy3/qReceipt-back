@@ -24,7 +24,7 @@ import static xyz.qakashi.qreceipt.util.Constants.PUBLIC_API_ENDPOINT;
 public class AnalyticsOpenController {
     private final AnalyticsService analyticsService;
 
-    @GetMapping(value = "/getTotalSpendingsForLastFiveMonths")
+    @GetMapping(value = "/getTotalSpendingsForLastMonths")
     public ResponseEntity<List<Map<String, Double>>> get() {
 
         return ResponseEntity.ok(analyticsService.getSpendingsPerLastNMonths(PROFILE_PAGE_ANALYTICS_NUMBER_OF_MONTHS));

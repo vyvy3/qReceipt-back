@@ -10,6 +10,7 @@ import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static xyz.qakashi.qreceipt.util.Constants.PUBLIC_API_ENDPOINT;
 
@@ -17,16 +18,24 @@ import static xyz.qakashi.qreceipt.util.Constants.PUBLIC_API_ENDPOINT;
 @RequestMapping(PUBLIC_API_ENDPOINT + "/receipt")
 @RequiredArgsConstructor
 @ApiModel(value = "ReceiptOpenController", description = "TEST")
+//TODO: REMOVE ME
 public class ReceiptOpenController {
     private final ReceiptService receiptService;
 
-    @PostMapping("/generate")
-    public ResponseEntity<qReceiptViewDto> generateReceipt(@ApiParam("Purchased products") @RequestBody Map<String, Double> products) {
-        return ResponseEntity.ok(receiptService.generateReceipt(products, null));
-    }
+//    @PostMapping("/generate")
+//    public ResponseEntity<qReceiptViewDto> generateReceipt(@ApiParam("Purchased products") @RequestBody Map<String, Double> products) {
+//        return ResponseEntity.ok(receiptService.generateReceipt(products, null));
+//    }
 
-    @GetMapping("/getAll")
+    @GetMapping("/author/getAll")
     public ResponseEntity<List<qReceiptViewDto>> getAll() {
         return ResponseEntity.ok(receiptService.getAllByAuthor(null));
     }
+
+
+    @GetMapping(value = "/qr/{uuid}")
+    public ResponseEntity<byte[]> getPhoto(@PathVariable("uuid") UUID id) {
+        return receiptService.getReceiptQR(id);
+    }
+
 }

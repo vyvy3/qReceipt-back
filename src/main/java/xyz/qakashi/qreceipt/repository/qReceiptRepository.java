@@ -15,6 +15,8 @@ import java.util.UUID;
 public interface qReceiptRepository extends JpaRepository<qReceipt, UUID> {
     List<qReceipt> findAllByAuthor (String author);
 
+    List<qReceipt> findAllByOwner_EmailIgnoreCase(String email);
+
     @Query("SELECT CAST(MONTH(e.createdDate) AS string) as month, " +
             "CAST(SUM(e.totalSum) AS string) as sum " +
             "FROM qReceipt e " +

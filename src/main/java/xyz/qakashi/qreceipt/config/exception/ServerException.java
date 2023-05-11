@@ -23,4 +23,12 @@ public class ServerException extends BaseException {
     public static ServerException errorWhileSavingFile() {
         return new ServerException("error-while-saving-file");
     }
+
+    public static ServerException errorDuringSerialization() {
+        return new ServerException("error-during-serialization");
+    }
+
+    public static ServerException errorDuringQrGeneration() {
+        return new ServerException("error-during-qr-generation");
+    }
 }

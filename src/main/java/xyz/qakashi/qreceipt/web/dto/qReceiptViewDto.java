@@ -10,13 +10,16 @@ import java.util.UUID;
 public class qReceiptViewDto {
     private UUID id;
 
-    private ZonedDateTime printDate;
+    private ZonedDateTime createdDate;
+
+    private Double total;
 
     private String author;
 
     public qReceiptViewDto(qReceipt qreceipt) {
         this.id = qreceipt.getId();
-        this.printDate = qreceipt.getPrintDate();
+        this.createdDate = qreceipt.getCreatedDate();
         this.author = qreceipt.getAuthor();
+        this.total = qreceipt.getTotalSum();
     }
 }

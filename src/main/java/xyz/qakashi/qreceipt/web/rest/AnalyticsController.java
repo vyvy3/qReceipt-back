@@ -22,7 +22,7 @@ import static xyz.qakashi.qreceipt.util.Constants.PROFILE_PAGE_ANALYTICS_NUMBER_
 public class AnalyticsController {
     private final AnalyticsService analyticsService;
 
-    @GetMapping(value = "/getMyTotalSpendingsForLastFiveMonths")
+    @GetMapping(value = "/getMyTotalSpendingsForLastMonths")
     public ResponseEntity<List<Map<String, Double>>> get(@ApiIgnore @Autowired Principal principal) {
         return ResponseEntity.ok(analyticsService.getMySpendingsPerLastNMonths(PROFILE_PAGE_ANALYTICS_NUMBER_OF_MONTHS, principal.getName()));
     }
