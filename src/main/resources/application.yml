@@ -1,52 +1,22 @@
-#file:
-#  upload-dir: D:\\JavaProjects\\zxc\\images\\
-
-server:
-  port: 8080
-
-email:
-  address: basearchetype@gmail.com
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/qreceipt
-    username: postgres
-    password: postgres
-
+  application:
+    name: qreceipt
+  config:
+    import: "optional:consul:"
+  cloud:
+    consul:
+      binder:
+        enabled: true
+      scheme: ${consul_scheme:http}
+      host: ${consul_host:45.148.31.152}
+      port: ${consul_port:8500}
+      config:
+        format: yaml
+      discovery:
+        preferIpAddress: true
   jpa:
-    #show-sql: true # commend it
     hibernate:
       ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-  mail:
-    host: smtp-relay.sendinblue.com
-    port: 587
-    username: noreply.qreceipt@gmail.com
-    password: kbBd9gz5MwP4jcyL
-
-    properties:
-      mail:
-        smtp:
-          ssl:
-            trust: "*"
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
-  servlet:
-    multipart:
-      enabled: true
-      file-size-threshold: 1MB
-      max-file-size: 100MB
-      max-request-size: 100MB
-  flyway:
-    baseline-on-migrate: true
-    sql-migration-prefix: "Q"
-    locations: classpath:/db/migration/postgresql
-    table: qreceipt_flyway_schema
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
