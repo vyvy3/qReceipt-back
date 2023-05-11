@@ -16,8 +16,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = Constants.DATABASE_PREFIX + "user")
 public class User extends BaseEntity<Long> {
-    @Column(name = "email", columnDefinition = "VARCHAR")
-    private String email;
+    @Column(name = "login", columnDefinition = "VARCHAR")
+    private String login;
 
     @Column(name = "password", columnDefinition = "VARCHAR")
     private String password;

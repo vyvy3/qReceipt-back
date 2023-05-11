@@ -9,7 +9,8 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
@@ -18,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import xyz.qakashi.qreceipt.config.exception.NotFoundException;
 import xyz.qakashi.qreceipt.config.exception.ServerException;
-import xyz.qakashi.qreceipt.domain.ReceiptForm;
 import xyz.qakashi.qreceipt.domain.ReceiptTemplate;
 import xyz.qakashi.qreceipt.domain.User;
 import xyz.qakashi.qreceipt.domain.qReceipt;
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,63 +52,69 @@ public class ReceiptServiceImpl implements ReceiptService {
     private final FileService fileService;
 
     //    @Override
-    @SneakyThrows
-    public qReceiptViewDto generateReceipt(Map<String, Double> products, String authorName) {
-        ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
-        if (isNull(form)) {
-            throw ServerException.noReceiptFormIsPresent();
-        }
-        List<JasperPrint> printList = new ArrayList<>();
-
-        for (ReceiptTemplate template : form.getTemplates()) {
-            Map<String, Object> parameters = fillParameters(template, products);
-
-            JasperReport report = JasperCompileManager.compileReport(getJrxml(template));
-            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
-            printList.add(print);
-        }
-        byte[] result = getReceiptPages(printList);
-        String fileName = "Receipt-" + LocalDate.now().toString() + ".pdf";
-        UUID fileUUID = fileService.save(fileName, result);
-        qReceipt qReceipt = new qReceipt();
-        qReceipt.setAuthor(authorName);
-        qReceipt.setPrintDate(ZonedDateTime.now());
-        qReceipt.setId(fileUUID);
-        qReceipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
-        qReceipt.setTotalSum(getTotalSum(products));
-        qReceipt = receiptRepository.save(qReceipt);
-        return new qReceiptViewDto(qReceipt);
-    }
+//    @SneakyThrows
+//    public qReceiptViewDto generateReceipt(Map<String, Double> products, String cashier) {
+//        ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
+//        if (isNull(form)) {
+//            throw ServerException.noReceiptFormIsPresent();
+//        }
+//        List<JasperPrint> printList = new ArrayList<>();
+//
+//        for (ReceiptTemplate template : form.getTemplates()) {
+//            Map<String, Object> parameters = fillParameters(template, products);
+//
+//            JasperReport report = JasperCompileManager.compileReport(getJrxml(template));
+//            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+//            printList.add(print);
+//        }
+//        byte[] result = getReceiptPages(printList);
+//        String fileName = "Receipt-" + LocalDate.now().toString() + ".pdf";
+//        UUID fileUUID = fileService.save(fileName, result);
+//        qReceipt qReceipt = new qReceipt();
+//        qReceipt.setAuthor(authorName);
+//        qReceipt.setPrintDate(ZonedDateTime.now());
+//        qReceipt.setId(fileUUID);
+//        qReceipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
+//        qReceipt.setTotalSum(getTotalSum(products));
+//        qReceipt = receiptRepository.save(qReceipt);
+//        return new qReceiptViewDto(qReceipt);
+//    }
 
     @Override
-    public List<qReceiptViewDto> getAllByAuthor(String author) {
-        return receiptRepository.findAllByAuthor(author).stream()
+    public List<qReceiptViewDto> getAllByCashier(String cashier) {
+        return receiptRepository.findAllByCashier_LoginIgnoreCase(cashier).stream()
                 .map(qReceiptViewDto::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<qReceiptViewDto> getAllByOwner(String author) {
-        return receiptRepository.findAllByOwner_EmailIgnoreCase(author).stream()
+    public List<qReceiptViewDto> getAllByOwner(String ownerLogin) {
+        return receiptRepository.findAllByOwner_LoginIgnoreCase(ownerLogin).stream()
                 .map(qReceiptViewDto::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public UUID createReceipt(Map<String, Double> products, String authorName) {
+    public UUID createReceipt(Map<String, Double> products, String cashierLogin) {
+
+        User cashier = userRepository.findByLoginIgnoreCase(cashierLogin).orElse(null);
+        if (isNull(cashier)) {
+            throw NotFoundException.userNotFoundByLogin(cashierLogin);
+        }
+
         UUID id = UUID.randomUUID();
-        qReceipt qReceipt = new qReceipt();
-        qReceipt.setAuthor(authorName);
-        qReceipt.setPrintDate(ZonedDateTime.now());
-        qReceipt.setId(id);
+        qReceipt receipt = new qReceipt();
+        receipt.setCashierId(cashier.getId());
+        receipt.setPrintDate(ZonedDateTime.now());
+        receipt.setId(id);
         try {
-            qReceipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
+            receipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw ServerException.errorDuringSerialization();
         }
-        qReceipt.setTotalSum(getTotalSum(products));
-        receiptRepository.save(qReceipt);
+        receipt.setTotalSum(getTotalSum(products));
+        receiptRepository.save(receipt);
 
         return id;
     }
@@ -138,7 +143,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     @Override
     public void assignReceipt(String assignTo, UUID receiptId) {
-        User user = userRepository.findByEmailIgnoreCase(assignTo).orElse(null);
+        User user = userRepository.findByLoginIgnoreCase(assignTo).orElse(null);
         if (isNull(user)) {
             throw NotFoundException.userNotFoundByEmail(assignTo);
         }

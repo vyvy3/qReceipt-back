@@ -23,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmailIgnoreCase(username).orElse(null);
+        User user = userRepository.findByLoginIgnoreCase(username).orElse(null);
         if (isNull(user)){
             throw NotFoundException.userNotFoundByEmail(username);
         }
@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         });
 
-        return new org.springframework.security.core.userdetails.User(user.getEmail(),user.getPassword(), authorities);
+        return new org.springframework.security.core.userdetails.User(user.getLogin(),user.getPassword(), authorities);
 
     }
 }

@@ -25,7 +25,7 @@ public class JwtCoder {
         for (Role role : user.getRoles()) {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
         }
-        return Jwts.builder().setSubject(user.getEmail())
+        return Jwts.builder().setSubject(user.getLogin())
                 .claim("authorities",
                         authorities.stream()
                                 .map(GrantedAuthority::getAuthority)

@@ -24,6 +24,10 @@ public class NotFoundException extends BaseException {
         return new NotFoundException(String.format("user-not-found-by-email-%s", email));
     }
 
+    public static NotFoundException userNotFoundByLogin(String login) {
+        return new NotFoundException(String.format("user-not-found-by-login-%s", login));
+    }
+
     public static NotFoundException fileNotFound() {
         return new NotFoundException("file-is-not-found");
     }

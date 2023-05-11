@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
         user.getRoles().add(role);
         user.setFirstname(dto.getFirstname());
         user.setLastname(dto.getLastname());
-        user.setEmail(dto.getEmail());
+        user.setLogin(dto.getEmail());
         String encryptedPassword = PasswordEncoder.encode(dto.getPassword());
         user.setPassword(encryptedPassword);
 
@@ -65,12 +65,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void sendRegistrationCode(String email) {
-        User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        User user = userRepository.findByLoginIgnoreCase(email).orElse(null);
         if (isNull(user)) {
             throw NotFoundException.userNotFoundByEmail(email);
         }
 
-        VerificationCode verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, VerificationType.REGISTRATION).orElse(new VerificationCode());
+        VerificationCode verificationCode = verificationCodeRepository.findByUser_LoginIgnoreCaseAndVerificationType(email, VerificationType.REGISTRATION).orElse(new VerificationCode());
         if (nonNull(verificationCode.getBlockedUntil()) && ZonedDateTime.now().isBefore(verificationCode.getBlockedUntil())) {
             throw BadRequestException.userIsBlocked();
         }
@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDto login(LoginDto dto) {
-        User user = userRepository.findByEmailIgnoreCase(dto.getEmail()).orElse(null);
+        User user = userRepository.findByLoginIgnoreCase(dto.getEmail()).orElse(null);
 
         if (isNull(user)) {
             throw NotFoundException.userNotFoundByEmail(dto.getEmail());
@@ -110,14 +110,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void sendPasswordRecoveryCode(String email) {
         User user;
-        user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        user = userRepository.findByLoginIgnoreCase(email).orElse(null);
 
         if (isNull(user)) {
             throw NotFoundException.userNotFoundByEmail(email);
         }
 
         VerificationCode verificationCode;
-        verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, VerificationType.PASSWORD_RECOVERY).orElse(new VerificationCode());
+        verificationCode = verificationCodeRepository.findByUser_LoginIgnoreCaseAndVerificationType(email, VerificationType.PASSWORD_RECOVERY).orElse(new VerificationCode());
 
         if (nonNull(verificationCode.getBlockedUntil()) && ZonedDateTime.now().isBefore(verificationCode.getBlockedUntil())) {
             throw BadRequestException.userIsBlocked();
@@ -139,7 +139,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void compareSendCodeByType(String email, String code, VerificationType type) {
         VerificationCode verificationCode;
-        verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, type).orElse(null);
+        verificationCode = verificationCodeRepository.findByUser_LoginIgnoreCaseAndVerificationType(email, type).orElse(null);
 
 
         if (isNull(verificationCode)) {
@@ -186,7 +186,7 @@ public class AuthServiceImpl implements AuthService {
     public void updatePassword(String email, String password) {
         VerificationCode verificationCode;
 
-        verificationCode = verificationCodeRepository.findByUser_EmailIgnoreCaseAndVerificationType(email, VerificationType.PASSWORD_RECOVERY).orElse(null);
+        verificationCode = verificationCodeRepository.findByUser_LoginIgnoreCaseAndVerificationType(email, VerificationType.PASSWORD_RECOVERY).orElse(null);
 
         if (isNull(verificationCode) || !verificationCode.isConfirmed()) {
             throw BadRequestException.codeNotConfirmed();

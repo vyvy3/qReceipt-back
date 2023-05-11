@@ -18,7 +18,7 @@ public class Organization extends BaseEntity<Long> {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
     @Column(name = "picture")

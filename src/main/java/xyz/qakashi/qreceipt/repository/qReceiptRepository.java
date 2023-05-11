@@ -13,9 +13,9 @@ import java.util.UUID;
 
 @Repository
 public interface qReceiptRepository extends JpaRepository<qReceipt, UUID> {
-    List<qReceipt> findAllByAuthor (String author);
+    List<qReceipt> findAllByCashier_LoginIgnoreCase (String author);
 
-    List<qReceipt> findAllByOwner_EmailIgnoreCase(String email);
+    List<qReceipt> findAllByOwner_LoginIgnoreCase(String email);
 
     @Query("SELECT CAST(MONTH(e.createdDate) AS string) as month, " +
             "CAST(SUM(e.totalSum) AS string) as sum " +
@@ -28,10 +28,10 @@ public interface qReceiptRepository extends JpaRepository<qReceipt, UUID> {
     @Query("SELECT CAST(MONTH(e.createdDate) AS string) as month, " +
             "CAST(SUM(e.totalSum) AS string) as sum " +
             "FROM qReceipt e " +
-            "WHERE e.createdDate >= :startDate AND e.owner.email = :email " +
+            "WHERE e.createdDate >= :startDate AND e.owner.login = :login " +
             "GROUP BY MONTH(e.createdDate)" +
             "ORDER BY MONTH(e.createdDate) ASC")
     List<Map<String, String>> getTotalSumByLogin(@Param("startDate") ZonedDateTime startDate,
-                                                 @Param("email") String email);
+                                                 @Param("login") String login);
 
 }

@@ -21,7 +21,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void assignProfilePicture(String email, UUID photoUuid) {
-        User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        User user = userRepository.findByLoginIgnoreCase(email).orElse(null);
         if (isNull(user)) {
             throw NotFoundException.userNotFoundByEmail(email);
         }
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ProfileViewDto getProfileByEmail(String email) {
-        User user = userRepository.findByEmailIgnoreCase(email).orElse(null);
+        User user = userRepository.findByLoginIgnoreCase(email).orElse(null);
         if (isNull(user)) {
             throw NotFoundException.userNotFoundByEmail(email);
         }
@@ -41,6 +41,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean emailExists(String email) {
-        return userRepository.existsByEmailIgnoreCase(email);
+        return userRepository.existsByLoginIgnoreCase(email);
     }
 }

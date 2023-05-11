@@ -14,12 +14,9 @@ public class qReceiptViewDto {
 
     private Double total;
 
-    private String author;
-
     public qReceiptViewDto(qReceipt qreceipt) {
         this.id = qreceipt.getId();
         this.createdDate = qreceipt.getCreatedDate();
-        this.author = qreceipt.getAuthor();
         this.total = qreceipt.getTotalSum();
     }
 }

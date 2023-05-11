@@ -10,11 +10,11 @@ import java.util.UUID;
 public interface ReceiptService {
 //    qReceiptViewDto generateReceipt (Map<String, Double> products, String authorName);
 
-    List<qReceiptViewDto> getAllByAuthor(String author);
+    List<qReceiptViewDto> getAllByCashier(String cashier);
 
-    List<qReceiptViewDto> getAllByOwner(String author);
+    List<qReceiptViewDto> getAllByOwner(String ownerLogin);
 
-    UUID createReceipt(Map<String, Double> products, String authorName);
+    UUID createReceipt(Map<String, Double> products, String cashier);
 
     ResponseEntity<byte[]> getReceiptQR(UUID id);
 

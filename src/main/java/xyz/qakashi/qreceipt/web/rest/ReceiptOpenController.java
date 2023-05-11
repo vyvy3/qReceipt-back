@@ -1,7 +1,6 @@
 package xyz.qakashi.qreceipt.web.rest;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +8,6 @@ import xyz.qakashi.qreceipt.service.ReceiptService;
 import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static xyz.qakashi.qreceipt.util.Constants.PUBLIC_API_ENDPOINT;
@@ -29,7 +27,7 @@ public class ReceiptOpenController {
 
     @GetMapping("/author/getAll")
     public ResponseEntity<List<qReceiptViewDto>> getAll() {
-        return ResponseEntity.ok(receiptService.getAllByAuthor(null));
+        return ResponseEntity.ok(receiptService.getAllByCashier(null));
     }
 
 

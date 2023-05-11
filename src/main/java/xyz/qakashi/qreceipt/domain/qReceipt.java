@@ -27,15 +27,26 @@ public class qReceipt {
     @Column(name = "print_date")
     private ZonedDateTime printDate;
 
-    @Column(name = "author")
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cashier_id", insertable = false, updatable = false)
+    private User cashier;
 
+    @Column(name = "cashier_id")
+    private Long cashierId;
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", insertable = false, updatable = false)
     private User owner;
 
     @Column(name = "owner_id")
     private Long ownerId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id", insertable = false, updatable = false)
+    private User organization;
+
+    @Column(name = "organization_id")
+    private Long organizationId;
 
     @Column(name = "json", columnDefinition = "text")
     private String json;
