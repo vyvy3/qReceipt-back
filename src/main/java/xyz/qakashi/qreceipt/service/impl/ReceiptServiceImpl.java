@@ -27,6 +27,7 @@ import xyz.qakashi.qreceipt.repository.UserRepository;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.FileService;
 import xyz.qakashi.qreceipt.service.ReceiptService;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptMainDataDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
@@ -74,7 +75,7 @@ public class ReceiptServiceImpl implements ReceiptService {
 //        qReceipt.setAuthor(authorName);
 //        qReceipt.setPrintDate(ZonedDateTime.now());
 //        qReceipt.setId(fileUUID);
-//        qReceipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
+//        qReceipt.setJson(new ObjectMapper().writeValueAsString(products));
 //        qReceipt.setTotalSum(getTotalSum(products));
 //        qReceipt = receiptRepository.save(qReceipt);
 //        return new qReceiptViewDto(qReceipt);
@@ -95,8 +96,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @Override
-    public UUID createReceipt(Map<String, Double> products, String cashierLogin) {
-
+    public UUID createReceipt(ReceiptCreateDto dto, String cashierLogin) {
         User cashier = userRepository.findByLoginIgnoreCase(cashierLogin).orElse(null);
         if (isNull(cashier)) {
             throw NotFoundException.userNotFoundByLogin(cashierLogin);
@@ -105,15 +105,16 @@ public class ReceiptServiceImpl implements ReceiptService {
         UUID id = UUID.randomUUID();
         qReceipt receipt = new qReceipt();
         receipt.setCashierId(cashier.getId());
+        receipt.setOrganizationId(cashier.getOrganizationId());
         receipt.setPrintDate(ZonedDateTime.now());
         receipt.setId(id);
         try {
-            receipt.setJson(new ObjectMapper().writeValueAsString(products)); //TODO: make it object
+            receipt.setJson(new ObjectMapper().writeValueAsString(dto.getProducts()));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw ServerException.errorDuringSerialization();
         }
-        receipt.setTotalSum(getTotalSum(products));
+        receipt.setTotalSum(getTotalSum(dto.getProducts()));
         receiptRepository.save(receipt);
 
         return id;

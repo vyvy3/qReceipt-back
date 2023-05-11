@@ -22,20 +22,9 @@ import static xyz.qakashi.qreceipt.util.Constants.PRIVATE_API_ENDPOINT;
 public class ReceiptController {
     private final ReceiptService receiptService;
 
-//    @PostMapping("/generate")
-//    public ResponseEntity<qReceiptViewDto> generateReceipt(@ApiIgnore @Autowired Principal principal,
-//                                                           @ApiParam("Purchased products") @RequestBody Map<String, Double> products) {
-//        return ResponseEntity.ok(receiptService.generateReceipt(products, principal.getName()));
-//    }
-
     @GetMapping("/owner/getAll")
     public ResponseEntity<List<ReceiptRegistryDto>> getAll(@ApiIgnore @Autowired Principal principal) {
         return ResponseEntity.ok(receiptService.getAllByOwner(principal.getName()));
-    }
-
-    @GetMapping( "/qr/{uuid}")
-    public ResponseEntity<byte[]> getQr(@PathVariable("uuid") UUID id) {
-        return receiptService.getReceiptQR(id);
     }
 
     @PostMapping("/claim/{uuid}")

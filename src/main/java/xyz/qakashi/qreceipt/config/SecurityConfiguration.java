@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                 .antMatchers("/public/**").permitAll()
                 .antMatchers("/private/**").authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/api/**").hasRole("API_USER")
+                .antMatchers("/api/**").hasAnyRole("API_USER", "ADMIN")
                 .antMatchers("/",
                         "/v2/api-docs/**",   //swagger APIS
                         "/v3/api-docs/**",
