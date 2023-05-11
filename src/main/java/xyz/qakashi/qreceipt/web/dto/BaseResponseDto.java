@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @ApiModel("Base response model")
-public class BaserResponseDto {
+public class BaseResponseDto {
     private String result;
 }
