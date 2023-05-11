@@ -1,6 +1,7 @@
 insert into qreceipt_role (id, name)
 values (1, 'USER'),
-       (2, 'ADMIN');
+       (2, 'ADMIN'),
+       (3, 'ORG_MANAGER');
 INSERT INTO public.qreceipt_receipt_form (description)
 VALUES ('test');
 
