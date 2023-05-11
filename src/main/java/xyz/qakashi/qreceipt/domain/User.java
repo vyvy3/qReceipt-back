@@ -34,6 +34,13 @@ public class User extends BaseEntity<Long> {
     @Column(name = "picture")
     private UUID picture;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "organization_id", insertable = false, updatable = false)
+    private Organization organization;
+
+    @Column(name = "organization_id")
+    private Long organizationId;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
 }

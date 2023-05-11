@@ -23,4 +23,5 @@ public class Role extends BaseEntity<Long> {
     public static final Long USER = 1L;
     public static final Long ADMIN = 2L;
     public static final Long ORG_MANAGER = 3L;
+    public static final Long API_USER = 4L;
 }
