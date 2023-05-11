@@ -9,16 +9,19 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import xyz.qakashi.qreceipt.config.exception.NotFoundException;
 import xyz.qakashi.qreceipt.config.exception.ServerException;
+import xyz.qakashi.qreceipt.domain.ReceiptForm;
 import xyz.qakashi.qreceipt.domain.ReceiptTemplate;
 import xyz.qakashi.qreceipt.domain.User;
 import xyz.qakashi.qreceipt.domain.qReceipt;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,35 +55,6 @@ public class ReceiptServiceImpl implements ReceiptService {
     private final qReceiptRepository receiptRepository;
     private final UserRepository userRepository;
     private final FileService fileService;
-
-    //    @Override
-//    @SneakyThrows
-//    public qReceiptViewDto generateReceipt(Map<String, Double> products, String cashier) {
-//        ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
-//        if (isNull(form)) {
-//            throw ServerException.noReceiptFormIsPresent();
-//        }
-//        List<JasperPrint> printList = new ArrayList<>();
-//
-//        for (ReceiptTemplate template : form.getTemplates()) {
-//            Map<String, Object> parameters = fillParameters(template, products);
-//
-//            JasperReport report = JasperCompileManager.compileReport(getJrxml(template));
-//            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
-//            printList.add(print);
-//        }
-//        byte[] result = getReceiptPages(printList);
-//        String fileName = "Receipt-" + LocalDate.now().toString() + ".pdf";
-//        UUID fileUUID = fileService.save(fileName, result);
-//        qReceipt qReceipt = new qReceipt();
-//        qReceipt.setAuthor(authorName);
-//        qReceipt.setPrintDate(ZonedDateTime.now());
-//        qReceipt.setId(fileUUID);
-//        qReceipt.setJson(new ObjectMapper().writeValueAsString(products));
-//        qReceipt.setTotalSum(getTotalSum(products));
-//        qReceipt = receiptRepository.save(qReceipt);
-//        return new qReceiptViewDto(qReceipt);
-//    }
 
     @Override
     public List<ReceiptRegistryDto> getAllByCashier(String cashier) {
@@ -155,6 +130,54 @@ public class ReceiptServiceImpl implements ReceiptService {
 
         receipt.setOwnerId(user.getId());
         receiptRepository.save(receipt);
+    }
+
+    @Override
+    public ResponseEntity<Resource> printAndDownloadReceipt(UUID id) {
+        qReceipt receipt = receiptRepository.findById(id).orElse(null);
+        if (isNull(receipt)) {
+            throw NotFoundException.entityNotFoundById("qReceipt", id.toString());
+        }
+        Map<String, Double> products;
+        try {
+            products = new ObjectMapper().readValue(receipt.getJson(), Map.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw ServerException.errorDuringSerialization();
+        }
+        String fileName = "receipt-" + LocalDate.now().toString() + ".pdf";
+        byte[] result = printReceipt(products);
+        ByteArrayResource resource = new ByteArrayResource(result);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
+        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+        headers.add("Pragma", "no-cache");
+        headers.add("Expires", "0");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentLength(result.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+    @SneakyThrows
+    private byte[] printReceipt(Map<String, Double> products) {
+        ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
+        if (isNull(form)) {
+            throw ServerException.noReceiptFormIsPresent();
+        }
+        List<JasperPrint> printList = new ArrayList<>();
+
+        for (ReceiptTemplate template : form.getTemplates()) {
+            Map<String, Object> parameters = fillParameters(template, products);
+
+            JasperReport report = JasperCompileManager.compileReport(getJrxml(template));
+            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            printList.add(print);
+        }
+        byte[] result = getReceiptPages(printList);
+        return result;
     }
 
 

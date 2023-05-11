@@ -3,6 +3,7 @@ package xyz.qakashi.qreceipt.web.rest;
 import io.swagger.annotations.ApiModel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -33,4 +34,8 @@ public class ReceiptController {
         receiptService.assignReceipt(principal.getName(), id);
     }
 
+    @GetMapping("/printAndDownloadReceipt/{uuid}")
+    public ResponseEntity<Resource> printAndDownloadReceipt(@PathVariable("uuid") UUID id) {
+        return receiptService.printAndDownloadReceipt(id);
+    }
 }

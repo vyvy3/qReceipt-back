@@ -1,5 +1,6 @@
 package xyz.qakashi.qreceipt.service;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
@@ -18,4 +19,6 @@ public interface ReceiptService {
     ResponseEntity<byte[]> getReceiptQR(UUID id);
 
     void assignReceipt(String assignTo, UUID receiptId);
+
+    ResponseEntity<Resource> printAndDownloadReceipt(UUID id);
 }
