@@ -15,4 +15,6 @@ public class Constants {
     public static Integer CODE_BLOCK_TIME_IN_MINUTES = 5;
     public static Integer CODE_DEFAULT_LENGTH = 6;
     public static Integer CODE_MAX_ATTEMPT_COUNT = 5;
+
+    public static Integer PROFILE_PAGE_ANALYTICS_NUMBER_OF_MONTHS = 5;
 }

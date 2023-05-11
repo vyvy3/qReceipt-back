@@ -1,7 +1,8 @@
 package xyz.qakashi.qreceipt.service;
 
+import java.util.List;
 import java.util.Map;
 
 public interface AnalyticsService {
-    Map<String, Double> getSpendingsPerLast5Months();
+    List<Map<String, Double>> getSpendingsPerLastNMonths(int numberOfMonths);
 }
