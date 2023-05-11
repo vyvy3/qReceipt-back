@@ -54,8 +54,8 @@ public class ReceiptServiceImpl implements ReceiptService {
 
     //    @Override
     @SneakyThrows
-    public qReceiptViewDto generateReceipt (Map<String, Double> products, String authorName) {
-    ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
+    public qReceiptViewDto generateReceipt(Map<String, Double> products, String authorName) {
+        ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
         if (isNull(form)) {
             throw ServerException.noReceiptFormIsPresent();
         }
@@ -152,7 +152,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
 
-    private Map<String, Object> fillParameters (ReceiptTemplate template, Map<String, Double> products) {
+    private Map<String, Object> fillParameters(ReceiptTemplate template, Map<String, Double> products) {
 
         Map<String, Object> parameters = new HashMap<>();
 
@@ -185,7 +185,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @SneakyThrows
-    private byte[] getReceiptPages (List<JasperPrint> printList) {
+    private byte[] getReceiptPages(List<JasperPrint> printList) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         JRPdfExporter exporter = new JRPdfExporter();
         exporter.setParameter(JRExporterParameter.JASPER_PRINT_LIST, printList);
