@@ -43,7 +43,7 @@ public class qReceipt {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-    private User organization;
+    private Organization organization;
 
     @Column(name = "organization_id")
     private Long organizationId;

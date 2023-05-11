@@ -1,6 +1,7 @@
 package xyz.qakashi.qreceipt.domain;
 
 import lombok.*;
+import xyz.qakashi.qreceipt.domain.enums.MerchandiseCategory;
 import xyz.qakashi.qreceipt.util.Constants;
 
 import javax.persistence.*;
@@ -23,6 +24,10 @@ public class Organization extends BaseEntity<Long> {
 
     @Column(name = "picture")
     private UUID picture;
+
+    @Column(name = "merchandise_category")
+    @Enumerated(EnumType.STRING)
+    private MerchandiseCategory merchandiseCategory;
 
     @OneToMany(mappedBy = "organization", fetch = FetchType.LAZY)
     Set<User> users = new HashSet<>();

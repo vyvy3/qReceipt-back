@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
+import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class ReceiptOpenController {
 //    }
 
     @GetMapping("/author/getAll")
-    public ResponseEntity<List<qReceiptViewDto>> getAll() {
+    public ResponseEntity<List<ReceiptRegistryDto>> getAll() {
         return ResponseEntity.ok(receiptService.getAllByCashier(null));
     }
 

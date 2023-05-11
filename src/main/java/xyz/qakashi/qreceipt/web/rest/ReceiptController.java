@@ -1,18 +1,16 @@
 package xyz.qakashi.qreceipt.web.rest;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
+import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static xyz.qakashi.qreceipt.util.Constants.PRIVATE_API_ENDPOINT;
@@ -31,7 +29,7 @@ public class ReceiptController {
 //    }
 
     @GetMapping("/owner/getAll")
-    public ResponseEntity<List<qReceiptViewDto>> getAll(@ApiIgnore @Autowired Principal principal) {
+    public ResponseEntity<List<ReceiptRegistryDto>> getAll(@ApiIgnore @Autowired Principal principal) {
         return ResponseEntity.ok(receiptService.getAllByOwner(principal.getName()));
     }
 

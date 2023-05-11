@@ -28,7 +28,7 @@ import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.FileService;
 import xyz.qakashi.qreceipt.service.ReceiptService;
 import xyz.qakashi.qreceipt.web.dto.ReceiptMainDataDto;
-import xyz.qakashi.qreceipt.web.dto.qReceiptViewDto;
+import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -81,16 +81,16 @@ public class ReceiptServiceImpl implements ReceiptService {
 //    }
 
     @Override
-    public List<qReceiptViewDto> getAllByCashier(String cashier) {
+    public List<ReceiptRegistryDto> getAllByCashier(String cashier) {
         return receiptRepository.findAllByCashier_LoginIgnoreCase(cashier).stream()
-                .map(qReceiptViewDto::new)
+                .map(ReceiptRegistryDto::new)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<qReceiptViewDto> getAllByOwner(String ownerLogin) {
+    public List<ReceiptRegistryDto> getAllByOwner(String ownerLogin) {
         return receiptRepository.findAllByOwner_LoginIgnoreCase(ownerLogin).stream()
-                .map(qReceiptViewDto::new)
+                .map(ReceiptRegistryDto::new)
                 .collect(Collectors.toList());
     }
 
