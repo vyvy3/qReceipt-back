@@ -1,4 +1,4 @@
-package xyz.qakashi.qreceipt.web.dto;
+package xyz.qakashi.qreceipt.web.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

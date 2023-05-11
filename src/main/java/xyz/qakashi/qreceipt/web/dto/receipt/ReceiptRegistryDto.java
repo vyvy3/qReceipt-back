@@ -1,7 +1,8 @@
-package xyz.qakashi.qreceipt.web.dto;
+package xyz.qakashi.qreceipt.web.dto.receipt;
 
 import lombok.*;
 import xyz.qakashi.qreceipt.domain.qReceipt;
+import xyz.qakashi.qreceipt.web.dto.organization.OrganizationRegistryDto;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;

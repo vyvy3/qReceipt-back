@@ -15,7 +15,10 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.exceptionHandling()
+        http
+                .cors().disable()
+                .csrf().disable()
+                .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .and()
                 .csrf().disable()
@@ -23,6 +26,8 @@ public class SecurityConfiguration {
                 .authorizeRequests()
                 .antMatchers("/public/**").permitAll()
                 .antMatchers("/private/**").authenticated()
+                .antMatchers("/admin/**").hasRole("ADMIN")
+                .antMatchers("/api/**").hasRole("API_USER")
                 .antMatchers("/",
                         "/v2/api-docs/**",   //swagger APIS
                         "/v3/api-docs/**",

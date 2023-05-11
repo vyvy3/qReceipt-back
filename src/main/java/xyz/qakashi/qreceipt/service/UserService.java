@@ -1,6 +1,6 @@
 package xyz.qakashi.qreceipt.service;
 
-import xyz.qakashi.qreceipt.web.dto.ProfileViewDto;
+import xyz.qakashi.qreceipt.web.dto.user.ProfileViewDto;
 
 import java.util.UUID;
 

@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 import xyz.qakashi.qreceipt.domain.enums.VerificationType;
 import xyz.qakashi.qreceipt.service.AuthService;
 import xyz.qakashi.qreceipt.service.UserService;
-import xyz.qakashi.qreceipt.web.dto.AuthResponseDto;
+import xyz.qakashi.qreceipt.web.dto.user.AuthResponseDto;
 import xyz.qakashi.qreceipt.web.dto.BaseResponseDto;
-import xyz.qakashi.qreceipt.web.dto.LoginDto;
-import xyz.qakashi.qreceipt.web.dto.RegistrationDto;
+import xyz.qakashi.qreceipt.web.dto.user.LoginDto;
+import xyz.qakashi.qreceipt.web.dto.user.RegistrationDto;
 
 import static xyz.qakashi.qreceipt.util.Constants.PUBLIC_API_ENDPOINT;
 

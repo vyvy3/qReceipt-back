@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.util.List;
 import java.util.UUID;

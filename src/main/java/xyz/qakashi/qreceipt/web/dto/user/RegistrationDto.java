@@ -1,4 +1,4 @@
-package xyz.qakashi.qreceipt.web.dto;
+package xyz.qakashi.qreceipt.web.dto.user;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,10 +11,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel("Login credentials model")
-public class LoginDto {
+@ApiModel(description = "Registration model")
+public class RegistrationDto {
+    @ApiModelProperty("First name")
+    protected String firstname;
+
+    @ApiModelProperty("Last name")
+    protected String lastname;
+
     @ApiModelProperty(value = "Email", required = true)
-    private String email;
+    protected String email;
+
     @ApiModelProperty(value = "Password", required = true)
-    private String password;
+    protected String password;
 }

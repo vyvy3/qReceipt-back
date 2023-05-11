@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.security.Principal;
 import java.util.List;

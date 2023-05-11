@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import xyz.qakashi.qreceipt.service.UserService;
-import xyz.qakashi.qreceipt.web.dto.ProfileViewDto;
+import xyz.qakashi.qreceipt.web.dto.user.ProfileViewDto;
 
 import java.security.Principal;
 import java.util.UUID;

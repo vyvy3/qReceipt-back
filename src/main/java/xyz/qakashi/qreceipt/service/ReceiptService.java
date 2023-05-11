@@ -1,7 +1,7 @@
 package xyz.qakashi.qreceipt.service;
 
 import org.springframework.http.ResponseEntity;
-import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.util.List;
 import java.util.Map;

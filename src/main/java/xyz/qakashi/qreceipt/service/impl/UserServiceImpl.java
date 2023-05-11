@@ -7,7 +7,7 @@ import xyz.qakashi.qreceipt.domain.User;
 import xyz.qakashi.qreceipt.repository.UserRepository;
 import xyz.qakashi.qreceipt.service.UserService;
 import xyz.qakashi.qreceipt.util.Mapper;
-import xyz.qakashi.qreceipt.web.dto.ProfileViewDto;
+import xyz.qakashi.qreceipt.web.dto.user.ProfileViewDto;
 
 import java.util.UUID;
 

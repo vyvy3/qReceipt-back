@@ -1,4 +1,4 @@
-package xyz.qakashi.qreceipt.web.dto;
+package xyz.qakashi.qreceipt.web.dto.organization;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

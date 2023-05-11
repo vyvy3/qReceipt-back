@@ -27,8 +27,8 @@ import xyz.qakashi.qreceipt.repository.UserRepository;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.FileService;
 import xyz.qakashi.qreceipt.service.ReceiptService;
-import xyz.qakashi.qreceipt.web.dto.ReceiptMainDataDto;
-import xyz.qakashi.qreceipt.web.dto.ReceiptRegistryDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptMainDataDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

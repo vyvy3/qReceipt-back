@@ -17,9 +17,9 @@ import xyz.qakashi.qreceipt.service.CodeGenerator;
 import xyz.qakashi.qreceipt.service.EmailService;
 import xyz.qakashi.qreceipt.service.UserService;
 import xyz.qakashi.qreceipt.util.PasswordEncoder;
-import xyz.qakashi.qreceipt.web.dto.AuthResponseDto;
-import xyz.qakashi.qreceipt.web.dto.LoginDto;
-import xyz.qakashi.qreceipt.web.dto.RegistrationDto;
+import xyz.qakashi.qreceipt.web.dto.user.AuthResponseDto;
+import xyz.qakashi.qreceipt.web.dto.user.LoginDto;
+import xyz.qakashi.qreceipt.web.dto.user.RegistrationDto;
 
 import java.time.ZonedDateTime;
 import java.util.Objects;

@@ -2,9 +2,9 @@ package xyz.qakashi.qreceipt.service;
 
 
 import xyz.qakashi.qreceipt.domain.enums.VerificationType;
-import xyz.qakashi.qreceipt.web.dto.AuthResponseDto;
-import xyz.qakashi.qreceipt.web.dto.LoginDto;
-import xyz.qakashi.qreceipt.web.dto.RegistrationDto;
+import xyz.qakashi.qreceipt.web.dto.user.AuthResponseDto;
+import xyz.qakashi.qreceipt.web.dto.user.LoginDto;
+import xyz.qakashi.qreceipt.web.dto.user.RegistrationDto;
 
 public interface AuthService {
     void registration(RegistrationDto dto);

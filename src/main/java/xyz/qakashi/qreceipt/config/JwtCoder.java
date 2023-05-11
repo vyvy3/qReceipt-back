@@ -23,7 +23,7 @@ public class JwtCoder {
     public static String generateJwt(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
         for (Role role : user.getRoles()) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
         }
         return Jwts.builder().setSubject(user.getLogin())
                 .claim("authorities",
