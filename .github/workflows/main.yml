@@ -1,33 +1,33 @@
-name: Build and Deploy
-on:
-  push:
-    branches:
-      - develop
-  pull_request:
-    branches:
-      - develop
-jobs:
-  build-and-deploy:
-    runs-on: self-hosted
-    env:
-      DOCKER_BUILDKIT: 1
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+# name: Build and Deploy
+# on:
+#   push:
+#     branches:
+#       - develop
+#   pull_request:
+#     branches:
+#       - develop
+# jobs:
+#   build-and-deploy:
+#     runs-on: self-hosted
+#     env:
+#       DOCKER_BUILDKIT: 1
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          tags: qreceipt:latest
+#       - name: Build and push Docker image
+#         uses: docker/build-push-action@v2
+#         with:
+#           context: .
+#           file: ./Dockerfile
+#           push: false
+#           tags: qreceipt:latest
 
-      - name: Stop and remove running Docker container
-        run: |
-          docker stop qreceipt || true
-          docker rm qreceipt || true
+#       - name: Stop and remove running Docker container
+#         run: |
+#           docker stop qreceipt || true
+#           docker rm qreceipt || true
 
-      - name: Run Docker container
-        run: |
-          docker run -d -p 8080:8080 --name qreceipt --network database-nw --restart always qreceipt:latest
+#       - name: Run Docker container
+#         run: |
+#           docker run -d -p 8080:8080 --name qreceipt --network database-nw --restart always qreceipt:latest
