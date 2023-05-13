@@ -15,6 +15,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporterParameter;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,9 @@ import xyz.qakashi.qreceipt.repository.UserRepository;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.FileService;
 import xyz.qakashi.qreceipt.service.ReceiptService;
+import xyz.qakashi.qreceipt.util.PageableUtils;
+import xyz.qakashi.qreceipt.web.dto.PageDto;
+import xyz.qakashi.qreceipt.web.dto.PageableDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptMainDataDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
@@ -68,6 +72,13 @@ public class ReceiptServiceImpl implements ReceiptService {
         return receiptRepository.findAllByOwner_LoginIgnoreCase(ownerLogin).stream()
                 .map(ReceiptRegistryDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public PageDto<ReceiptRegistryDto> getAllByOwnerPageable(String ownerLogin, PageableDto pageable) {
+        Page<qReceipt> page = receiptRepository.findAllByOwner_LoginIgnoreCase(ownerLogin, PageableUtils.createPageRequest(pageable));
+        List<ReceiptRegistryDto> list = page.toList().stream().map(ReceiptRegistryDto::new).collect(Collectors.toList());
+        return new PageDto<>(page, list);
     }
 
     @Override

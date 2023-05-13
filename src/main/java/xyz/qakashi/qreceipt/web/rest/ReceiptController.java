@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import xyz.qakashi.qreceipt.service.ReceiptService;
+import xyz.qakashi.qreceipt.web.dto.PageDto;
+import xyz.qakashi.qreceipt.web.dto.PageableDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.security.Principal;
@@ -26,6 +28,12 @@ public class ReceiptController {
     @GetMapping("/owner/getAll")
     public ResponseEntity<List<ReceiptRegistryDto>> getAll(@ApiIgnore @Autowired Principal principal) {
         return ResponseEntity.ok(receiptService.getAllByOwner(principal.getName()));
+    }
+
+    @PostMapping("/owner/getPageable")
+    public ResponseEntity<PageDto<ReceiptRegistryDto>> getAllPageable(@ApiIgnore @Autowired Principal principal,
+                                                              @RequestBody PageableDto pageable) {
+        return ResponseEntity.ok(receiptService.getAllByOwnerPageable(principal.getName(), pageable));
     }
 
     @PostMapping("/claim/{uuid}")

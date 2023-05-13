@@ -1,5 +1,7 @@
 package xyz.qakashi.qreceipt.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,9 @@ public interface qReceiptRepository extends JpaRepository<qReceipt, UUID> {
     List<qReceipt> findAllByCashier_LoginIgnoreCase (String author);
 
     List<qReceipt> findAllByOwner_LoginIgnoreCase(String email);
+
+    Page<qReceipt> findAllByOwner_LoginIgnoreCase(String ownerLogin, Pageable pageable);
+
 
     @Query("SELECT CAST(MONTH(e.createdDate) AS string) as month, " +
             "CAST(SUM(e.totalSum) AS string) as sum " +
