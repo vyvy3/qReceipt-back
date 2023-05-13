@@ -1,21 +1,28 @@
 package xyz.qakashi.qreceipt.domain;
 
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 import org.springframework.data.annotation.CreatedDate;
 import xyz.qakashi.qreceipt.util.Constants;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateFieldDto;
 
 import javax.persistence.*;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 @Table(name = Constants.DATABASE_PREFIX + "receipt")
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @NoArgsConstructor
 @AllArgsConstructor
 public class qReceipt {
@@ -23,9 +30,6 @@ public class qReceipt {
     @Id
     @Column(name = "id")
     private UUID id;
-
-    @Column(name = "print_date")
-    private ZonedDateTime printDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cashier_id", insertable = false, updatable = false)
@@ -48,10 +52,10 @@ public class qReceipt {
     @Column(name = "organization_id")
     private Long organizationId;
 
-    @Column(name = "json", columnDefinition = "text")
-    private String json;
+    @Type(type = "jsonb")
+    @Column(name = "json", columnDefinition = "jsonb")
+    private List<ReceiptCreateFieldDto> json = new ArrayList<>();
 
-    @CreationTimestamp
     @Column(name = "created_date")
     private ZonedDateTime createdDate;
 

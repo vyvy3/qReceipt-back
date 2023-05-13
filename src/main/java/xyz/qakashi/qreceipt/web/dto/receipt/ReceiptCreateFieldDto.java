@@ -5,14 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReceiptCreateDto {
-    List<ReceiptCreateFieldDto> products = new ArrayList<>();
+public class ReceiptCreateFieldDto {
+    private String name;
+
+    private Double price;
+
+    private Integer quantity;
+
+    private Double totalPrice;
 }

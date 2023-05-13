@@ -5,10 +5,14 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ReceiptMainDataDto {
+public class ReceiptPrintTableDto {
     private String rowNumber;
 
-    private String key;
+    private String name;
 
-    private String value;
+    private String price;
+
+    private String quantity;
+
+    private String totalPrice;
 }

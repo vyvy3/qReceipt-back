@@ -35,7 +35,8 @@ import xyz.qakashi.qreceipt.util.PageableUtils;
 import xyz.qakashi.qreceipt.web.dto.PageDto;
 import xyz.qakashi.qreceipt.web.dto.PageableDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateDto;
-import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptMainDataDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateFieldDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptPrintTableDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.io.ByteArrayInputStream;
@@ -46,6 +47,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,7 +56,7 @@ import static java.util.Objects.isNull;
 @Service
 @RequiredArgsConstructor
 public class ReceiptServiceImpl implements ReceiptService {
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
     private final ReceiptFormRepository receiptFormRepository;
     private final qReceiptRepository receiptRepository;
     private final UserRepository userRepository;
@@ -92,14 +94,9 @@ public class ReceiptServiceImpl implements ReceiptService {
         qReceipt receipt = new qReceipt();
         receipt.setCashierId(cashier.getId());
         receipt.setOrganizationId(cashier.getOrganizationId());
-        receipt.setPrintDate(ZonedDateTime.now());
         receipt.setId(id);
-        try {
-            receipt.setJson(new ObjectMapper().writeValueAsString(dto.getProducts()));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw ServerException.errorDuringSerialization();
-        }
+        receipt.setCreatedDate(ZonedDateTime.now());
+        receipt.setJson(dto.getProducts());
         receipt.setTotalSum(getTotalSum(dto.getProducts()));
         receiptRepository.save(receipt);
 
@@ -149,15 +146,8 @@ public class ReceiptServiceImpl implements ReceiptService {
         if (isNull(receipt)) {
             throw NotFoundException.entityNotFoundById("qReceipt", id.toString());
         }
-        Map<String, Double> products;
-        try {
-            products = new ObjectMapper().readValue(receipt.getJson(), Map.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw ServerException.errorDuringSerialization();
-        }
         String fileName = "receipt-" + LocalDate.now().toString() + ".pdf";
-        byte[] result = printReceipt(products);
+        byte[] result = printReceipt(receipt);
         ByteArrayResource resource = new ByteArrayResource(result);
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName);
@@ -173,7 +163,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
     @SneakyThrows
-    private byte[] printReceipt(Map<String, Double> products) {
+    private byte[] printReceipt(qReceipt receipt) {
         ReceiptForm form = receiptFormRepository.findById(1L).orElse(null);
         if (isNull(form)) {
             throw ServerException.noReceiptFormIsPresent();
@@ -181,7 +171,7 @@ public class ReceiptServiceImpl implements ReceiptService {
         List<JasperPrint> printList = new ArrayList<>();
 
         for (ReceiptTemplate template : form.getTemplates()) {
-            Map<String, Object> parameters = fillParameters(template, products);
+            Map<String, Object> parameters = fillParameters(template, receipt);
 
             JasperReport report = JasperCompileManager.compileReport(getJrxml(template));
             JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
@@ -192,7 +182,7 @@ public class ReceiptServiceImpl implements ReceiptService {
     }
 
 
-    private Map<String, Object> fillParameters(ReceiptTemplate template, Map<String, Double> products) {
+    private Map<String, Object> fillParameters(ReceiptTemplate template, qReceipt receipt) {
 
         Map<String, Object> parameters = new HashMap<>();
 
@@ -200,15 +190,23 @@ public class ReceiptServiceImpl implements ReceiptService {
 
             switch (param) {
                 case "date":
-                    parameters.put(param, simpleDateFormat.format(ZonedDateTime.now()));
+                    parameters.put(param, receipt.getCreatedDate().format(formatter));
                     break;
-
+                case "total":
+                    parameters.put(param, receipt.getTotalSum().toString());
+                    break;
                 case "main":
                     int cnt = 1;
-                    List<ReceiptMainDataDto> mainInfo = new ArrayList<>();
+                    List<ReceiptPrintTableDto> mainInfo = new ArrayList<>();
 
-                    for (Map.Entry<String, Double> entry : products.entrySet()) {
-                        mainInfo.add(new ReceiptMainDataDto(String.valueOf(cnt), entry.getKey(), entry.getValue().toString()));
+                    for (ReceiptCreateFieldDto entry : receipt.getJson()) {
+                        mainInfo.add(new ReceiptPrintTableDto(
+                                String.valueOf(cnt),
+                                entry.getName(),
+                                entry.getPrice().toString(),
+                                entry.getQuantity().toString(),
+                                entry.getTotalPrice().toString()
+                                ));
                         cnt++;
                     }
                     JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(mainInfo);
@@ -235,7 +233,7 @@ public class ReceiptServiceImpl implements ReceiptService {
         return os.toByteArray();
     }
 
-    private Double getTotalSum(Map<String, Double> products) {
-        return products.values().stream().mapToDouble(Double::doubleValue).sum();
+    private Double getTotalSum(List<ReceiptCreateFieldDto> products) {
+        return products.stream().mapToDouble(ReceiptCreateFieldDto::getTotalPrice).sum();
     }
 }
