@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import xyz.qakashi.qreceipt.web.dto.PageDto;
 import xyz.qakashi.qreceipt.web.dto.PageableDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptDetailedDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.util.List;
@@ -25,4 +26,6 @@ public interface ReceiptService {
     void assignReceipt(String assignTo, UUID receiptId);
 
     ResponseEntity<Resource> printAndDownloadReceipt(UUID id);
+
+    ReceiptDetailedDto previewReceipt(UUID id);
 }

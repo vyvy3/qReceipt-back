@@ -10,6 +10,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import xyz.qakashi.qreceipt.service.ReceiptService;
 import xyz.qakashi.qreceipt.web.dto.PageDto;
 import xyz.qakashi.qreceipt.web.dto.PageableDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptDetailedDto;
 import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
 
 import java.security.Principal;
@@ -45,5 +46,10 @@ public class ReceiptController {
     @GetMapping("/printAndDownloadReceipt/{uuid}")
     public ResponseEntity<Resource> printAndDownloadReceipt(@PathVariable("uuid") UUID id) {
         return receiptService.printAndDownloadReceipt(id);
+    }
+
+    @GetMapping("/preview/{uuid}")
+    public ResponseEntity<ReceiptDetailedDto> preview(@PathVariable("uuid") UUID id) {
+        return ResponseEntity.ok(receiptService.previewReceipt(id));
     }
 }

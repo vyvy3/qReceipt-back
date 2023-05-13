@@ -34,10 +34,7 @@ import xyz.qakashi.qreceipt.service.ReceiptService;
 import xyz.qakashi.qreceipt.util.PageableUtils;
 import xyz.qakashi.qreceipt.web.dto.PageDto;
 import xyz.qakashi.qreceipt.web.dto.PageableDto;
-import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateDto;
-import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptCreateFieldDto;
-import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptPrintTableDto;
-import xyz.qakashi.qreceipt.web.dto.receipt.ReceiptRegistryDto;
+import xyz.qakashi.qreceipt.web.dto.receipt.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -160,6 +157,15 @@ public class ReceiptServiceImpl implements ReceiptService {
                 .contentLength(result.length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+    @Override
+    public ReceiptDetailedDto previewReceipt(UUID id) {
+        qReceipt receipt = receiptRepository.findById(id).orElse(null);
+        if (isNull(receipt)) {
+            throw NotFoundException.entityNotFoundById("qReceipt", id.toString());
+        }
+        return new ReceiptDetailedDto(receipt);
     }
 
     @SneakyThrows
