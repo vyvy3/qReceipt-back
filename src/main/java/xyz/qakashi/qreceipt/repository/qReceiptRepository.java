@@ -22,6 +22,15 @@ public interface qReceiptRepository extends JpaRepository<qReceipt, UUID> {
     Page<qReceipt> findAllByOwner_LoginIgnoreCase(String ownerLogin, Pageable pageable);
 
 
+    @Query("SELECT CAST(e.organization.merchandiseCategory AS string) as category, " +
+            "CAST(SUM(e.totalSum) AS string) as sum " +
+            "FROM qReceipt e " +
+            "WHERE e.createdDate >= :startDate AND e.owner.login = :login " +
+            "GROUP BY e.organization.merchandiseCategory " +
+            "ORDER BY SUM(e.totalSum) DESC")
+    List<Map<String, String>> getTotalSumPerCategoryByLogin(@Param("startDate") ZonedDateTime startDate,
+                                                            @Param("login") String login);
+
     @Query("SELECT CAST(MONTH(e.createdDate) AS string) as month, " +
             "CAST(SUM(e.totalSum) AS string) as sum " +
             "FROM qReceipt e " +

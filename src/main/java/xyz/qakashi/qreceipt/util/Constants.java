@@ -19,4 +19,5 @@ public class Constants {
     public static Integer CODE_MAX_ATTEMPT_COUNT = 5;
 
     public static Integer PROFILE_PAGE_ANALYTICS_NUMBER_OF_MONTHS = 6;
+    public static Integer ANALYTICS_PER_CATEGORY_NUMBER_OF_DAYS = 30;
 }

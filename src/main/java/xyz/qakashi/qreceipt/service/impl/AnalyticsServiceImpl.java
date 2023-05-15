@@ -5,11 +5,13 @@ import org.springframework.stereotype.Service;
 import xyz.qakashi.qreceipt.repository.qReceiptRepository;
 import xyz.qakashi.qreceipt.service.AnalyticsService;
 import xyz.qakashi.qreceipt.util.Pair;
+import xyz.qakashi.qreceipt.web.dto.analytics.AnalyticsPerCategoryDto;
 
 import java.time.YearMonth;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +24,24 @@ public class AnalyticsServiceImpl implements AnalyticsService {
         List<Map<String, String>> queryResult = receiptRepository.getTotalSumByLogin(startDate, email);
 
         return getMonthsSum(numberOfMonths, queryResult);
+    }
+
+    @Override
+    public AnalyticsPerCategoryDto getMySpendingsForLastNDaysPerCategory(int numberOfDays, String email) {
+        ZonedDateTime startDate = ZonedDateTime.now().minusDays(numberOfDays);
+        List<Map<String, String>> spendingsPerCategories = receiptRepository.getTotalSumPerCategoryByLogin(startDate, email);
+        Double totalSum = spendingsPerCategories.stream()
+                .mapToDouble(map -> Double.parseDouble(map.get("sum")))
+                .sum();
+        AnalyticsPerCategoryDto dto = new AnalyticsPerCategoryDto();
+        Map<String, Double> formatedMap = new HashMap<>();
+        spendingsPerCategories.stream()
+                .forEach(map -> {
+                    formatedMap.put(map.get("category"), Double.parseDouble(map.get("sum")));
+                });
+        dto.setTotalSpendings(totalSum);
+        dto.setSpendingsPerCategory(formatedMap);
+        return dto;
     }
 
     @Override
