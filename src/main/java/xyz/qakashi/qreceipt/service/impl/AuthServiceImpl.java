@@ -13,7 +13,7 @@ import xyz.qakashi.qreceipt.repository.RoleRepository;
 import xyz.qakashi.qreceipt.repository.UserRepository;
 import xyz.qakashi.qreceipt.repository.VerificationCodeRepository;
 import xyz.qakashi.qreceipt.service.AuthService;
-import xyz.qakashi.qreceipt.service.CodeGenerator;
+import xyz.qakashi.qreceipt.util.CodeGenerator;
 import xyz.qakashi.qreceipt.service.EmailService;
 import xyz.qakashi.qreceipt.service.UserService;
 import xyz.qakashi.qreceipt.util.PasswordEncoder;

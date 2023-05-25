@@ -1,4 +1,4 @@
-package xyz.qakashi.qreceipt.service;
+package xyz.qakashi.qreceipt.util;
 
 import lombok.experimental.UtilityClass;
 
