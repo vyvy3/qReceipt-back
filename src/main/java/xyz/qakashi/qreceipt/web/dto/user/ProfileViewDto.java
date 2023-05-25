@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Getter
@@ -23,4 +24,8 @@ public class ProfileViewDto {
     private String firstname;
     @ApiModelProperty("Last name")
     private String lastname;
+    @ApiModelProperty(example = "OTHER")
+    private String gender;
+    @ApiModelProperty("Date of birth")
+    private ZonedDateTime dateOfBirth;
 }

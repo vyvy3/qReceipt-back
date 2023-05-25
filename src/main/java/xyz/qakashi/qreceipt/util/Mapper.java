@@ -11,7 +11,10 @@ import xyz.qakashi.qreceipt.web.dto.user.ProfileViewDto;
 
 @org.mapstruct.Mapper(componentModel = "spring", injectionStrategy = InjectionStrategy.CONSTRUCTOR)
 public interface Mapper {
-    @Mappings({@Mapping(target = "email", source = "login")})
+    @Mappings({
+            @Mapping(target = "email", source = "login"),
+            @Mapping(target = "gender", source = "genderSlug")
+    })
     ProfileViewDto toProfileViewDto(User user);
 
     Organization toOrganization(OrganizationDto dto);

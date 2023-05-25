@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import xyz.qakashi.qreceipt.domain.Gender;
 
 import java.time.ZonedDateTime;
 
@@ -14,18 +13,13 @@ import java.time.ZonedDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(description = "Registration model")
-public class RegistrationDto {
-    protected String firstname;
+public class EditProfileDto {
+    private String firstname;
 
-    protected String lastname;
-
-    protected String email;
-
-    protected String password;
+    private String lastname;
 
     @ApiModelProperty(example = "OTHER")
-    protected String gender;
+    private String gender;
 
-    protected ZonedDateTime dateOfBirth;
+    private ZonedDateTime dateOfBirth;
 }

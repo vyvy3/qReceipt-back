@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <if condition='!property("logstash_url").isEmpty()'>
+        <then>
+            <appender name="logstash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+                <destination>${logstash_url}</destination>
+                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
+                        <timestamp/>
+                        <version/>
+                        <message/>
+                        <loggerName/>
+                        <threadName/>
+                        <logLevel/>
+                        <logLevelValue/>
+                        <stackTrace/>
+                        <tags/>
+                        <logstashMarkers/>
+                        <mdc/>
+                        <pattern>
+                            <pattern>{"app": "${app_name:-qreceipt}"}</pattern>
+                        </pattern>
+                        <arguments/>
+                    </providers>
+                </encoder>
+            </appender>
+            <root level="INFO">
+                <appender-ref ref="logstash"/>
+            </root>
+        </then>
+    </if>
+</configuration>

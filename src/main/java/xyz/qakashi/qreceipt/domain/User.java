@@ -4,6 +4,7 @@ import lombok.*;
 import xyz.qakashi.qreceipt.util.Constants;
 
 import javax.persistence.*;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -43,4 +44,14 @@ public class User extends BaseEntity<Long> {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "gender", insertable = false, updatable = false)
+    private Gender gender;
+
+    @Column(name = "gender")
+    private String genderSlug;
+
+    @Column(name = "dob")
+    private ZonedDateTime dateOfBirth;
 }
